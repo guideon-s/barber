@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Barbero — Barber Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+</head>
+<body id="top">
+  <div class="graffiti-overlay"></div>
+
+  <header>
+    <div class="marca">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQhkZ4fiYPASrH7R5TQPnJFq9RLlEqQnv2SteIL1uojozAX8ro0JY3p7c&s=10" alt="Logo El Barbero" class="logo-mini" />
+      <div>
+        <strong>EL BARBERO</strong>
+        <small>RESPETO Y HONOR • BARBER SHOP</small>
+      </div>
+    </div>
+
+    <nav class="nav-botones">
+      <a href="#inicio" class="nav-btn">Página principal</a>
+      <a href="#agendar" class="nav-btn nav-btn-oro">Agendar cita</a>
+      <a href="./contacto.html" class="nav-btn">Contacto</a>
+    </nav>
+
+    <span class="badge-precio">Corte general: $99 MXN</span>
+  </header>
+
+  <section id="inicio" class="banner-principal">
+    <div class="banner-texto">
+      <span class="tag-graffiti">CORTE & AFEITADO AUTÉNTICO</span>
+      <h1>EL BARBERO — BARBER SHOP</h1>
+      <p>Más que un corte, una obra de arte. Horario de atención: <strong>17:00 a 22:00</strong>.</p>
+      <div class="servicios-rapidos">
+        <span>✂️ Corte clásico / fade — $99 MXN</span>
+        <span>🪒 Perfilado & barba</span>
+        <span>🎟️ 5 sellos = corte gratis</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="agendar" class="card">
+      <div class="hero-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQhkZ4fiYPASrH7R5TQPnJFq9RLlEqQnv2SteIL1uojozAX8ro0JY3p7c&s=10" alt="El Barbero" class="logo-hero" />
+        <div>
+          <span class="tag-graffiti">DISPONIBLE DE 17:00 A 22:00</span>
+          <h2>Agenda tu turno</h2>
+          <p>Elige el día y tu hora exacta (Ej. 17:36).</p>
+        </div>
+      </div>
+
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" placeholder="Ej. Juan" />
+
+      <label for="apellido">Apellido</label>
+      <input id="apellido" type="text" placeholder="Ej. Martínez" />
+
+      <label for="telefono">Teléfono</label>
+      <input id="telefono" type="tel" placeholder="Ej. 6641234567" />
+
+      <label for="fecha">Fecha</label>
+      <input id="fecha" type="date" />
+
+      <label for="hora-manual">Hora (Disponible de 17:00 a 22:00 — Ej. 17:36)</label>
+      <input id="hora-manual" type="time" min="17:00" max="22:00" />
+
+      <div id="aviso-choque" class="aviso-choque" style="display: none;">
+        <p id="texto-choque"></p>
+        <div class="acciones-choque">
+          <button id="btn-esperar-hora" type="button">Esperar aprox. 1 hora</button>
+          <button id="btn-mantener-hora" type="button">Agendar igual a mi hora (con espera)</button>
+        </div>
+      </div>
+
+      <button id="btn-confirmar" type="button">Confirmar cita ($99 MXN)</button>
+      <p id="mensaje-estado"></p>
+    </section>
+
+    <aside class="card card-lealtad">
+      <span class="tag-graffiti">VIP PASS</span>
+      <h2>Tarjeta de lealtad (5 sellos)</h2>
+      <p class="sub-lealtad">Junta 5 cortes y llévate el siguiente gratis.</p>
+      <p class="codigo-box">Código: <strong id="codigo-cliente">---</strong></p>
+      <p id="texto-sellos">0 / 5 sellos</p>
+      <div id="casillas-sellos"></div>
+      <div id="qr-contenedor"></div>
+      <button id="btn-limpiar-qr" type="button" class="btn-limpiar-qr">Limpiar QR y ticket</button>
+
+      <div id="voucher-cita" class="voucher" style="display: none;">
+        <div class="voucher-header">
+          <strong>TICKET DE CITA</strong>
+          <span id="voucher-folio">#---</span>
+        </div>
+        <div class="voucher-linea"><span>Cliente:</span><strong id="voucher-cliente">---</strong></div>
+        <div class="voucher-linea"><span>Teléfono:</span><strong id="voucher-telefono">---</strong></div>
+        <div class="voucher-linea"><span>Fecha:</span><strong id="voucher-fecha">---</strong></div>
+        <div class="voucher-linea"><span>Hora:</span><strong id="voucher-hora">---</strong></div>
+        <div class="voucher-linea"><span>Estado:</span><strong id="voucher-estado">Pendiente</strong></div>
+        <div class="voucher-linea"><span>Nota:</span><strong id="voucher-espera">Turno normal</strong></div>
+        <div class="voucher-total"><span>Total:</span><strong id="voucher-total">$99 MXN</strong></div>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="../js/app.js"></script>
+</body>
+</html>

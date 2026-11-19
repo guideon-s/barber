@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Barbero — Panel Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./admin.css" />
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+</head>
+<body>
+  <div class="admin-graffiti-bg"></div>
+
+  <main>
+    <header class="admin-header">
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQU5kVPiqebOIFseB5VFjQCz3BfoeT0ueHdwAzVvswxpcd4IJAmMxQs5kSl&s=10"
+        alt="Logo El Barbero Admin"
+        class="admin-logo"
+      />
+      <div>
+        <span class="admin-tag">CONTROL & LEALTAD • $99 MXN</span>
+        <h1>Panel Admin — El Barbero</h1>
+      </div>
+    </header>
+
+    <section>
+      <label for="codigo-buscar">Código del cliente</label>
+      <input id="codigo-buscar" type="text" placeholder="Ej. jm-91936" />
+      <button id="btn-buscar" type="button">Buscar</button>
+      <button id="btn-escanear" type="button">Escanear QR</button>
+      <button id="btn-detener" type="button">Detener cámara</button>
+      <div id="lector-qr"></div>
+      <p id="estado-admin">Listo para buscar.</p>
+    </section>
+
+    <section id="ficha-cliente" style="display: none;">
+      <h2 id="cli-nombre">---</h2>
+      <p>Código: <strong id="cli-codigo">---</strong></p>
+      <p>Teléfono: <strong id="cli-telefono">---</strong></p>
+      <p>Estado última cita: <strong id="cli-estado-cita">Pendiente</strong></p>
+      <p>Sellos: <strong id="cli-sellos">0</strong> / 5 | Cortes: <strong id="cli-cortes">0</strong></p>
+      <button id="btn-sumar-sello" type="button">+1 Sello</button>
+      <button id="btn-sumar-corte" type="button">+1 Corte</button>
+      <button id="btn-canjear" type="button">Canjear corte gratis (5 sellos)</button>
+      <button id="btn-abrir-perfil" type="button">Ver perfil</button>
+      <button id="btn-cerrar-ficha" type="button">Cerrar ficha</button>
+      <button id="btn-borrar-cliente" type="button">🗑️ Borrar cliente</button>
+    </section>
+
+    <section>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <h2 style="margin:0;">Fichas agendadas</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button id="btn-recuperar-datos" type="button">♻️ Recuperar datos</button>
+          <button id="btn-limpiar-todo" type="button">🗑️ Eliminar todo</button>
+        </div>
+      </div>
+      <div id="lista-agendados" style="margin-top:12px;">Cargando citas...</div>
+    </section>
+  </main>
+
+  <script type="module">
+    const STORAGE_CITAS = "barber_citas_locales";
+    const STORAGE_CLIENTES = "barber_clientes_locales";
+    const STORAGE_RESPALDO_CITAS = "barber_respaldo_citas";
+    const STORAGE_RESPALDO_CLIENTES = "barber_respaldo_clientes";
+
+    const inputBuscar = document.getElementById("codigo-buscar");
+    const btnBuscar = document.getElementById("btn-buscar");
+    const btnEscanear = document.getElementById("btn-escanear");
+    const btnDetener = document.getElementById("btn-detener");
+    const estadoAdmin = document.getElementById("estado-admin");
+    const fichaEl = document.getElementById("ficha-cliente");
+    const cliNombre = document.getElementById("cli-nombre");
+    const cliCodigo = document.getElementById("cli-codigo");
+    const cliTelefono = document.getElementById("cli-telefono");
+    const cliEstadoCita = document.getElementById("cli-estado-cita");
+    const cliSellos = document.getElementById("cli-sellos");
+    const cliCortes = document.getElementById("cli-cortes");
+    const btnSumarSello = document.getElementById("btn-sumar-sello");
+    const btnSumarCorte = document.getElementById("btn-sumar-corte");
+    const btnCanjear = document.getElementById("btn-canjear");
+    const btnAbrirPerfil = document.getElementById("btn-abrir-perfil");
+    const btnCerrarFicha = document.getElementById("btn-cerrar-ficha");
+    const btnBorrarCliente = document.getElementById("btn-borrar-cliente");
+    const btnLimpiarTodo = document.getElementById("btn-limpiar-todo");
+    const btnRecuperarDatos = document.getElementById("btn-recuperar-datos");
+    const listaAgendados = document.getElementById("lista-agendados");
+
+    let clienteActual = null;
+    let html5QrCode = null;
+
+    function leer(clave) {
+      try {
+        return JSON.parse(localStorage.getItem(clave) || "[]");
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function guardar(clave, val) {
+      localStorage.setItem(clave, JSON.stringify(val));
+    }
+
+    function guardarRespaldoActual() {
+      const citasActuales = leer(STORAGE_CITAS);
+      const clientesActuales = leer(STORAGE_CLIENTES);
+      if (citasActuales.length) guardar(STORAGE_RESPALDO_CITAS, citasActuales);
+      if (clientesActuales.length) guardar(STORAGE_RESPALDO_CLIENTES, clientesActuales);
+    }
+
+    function pintarFicha(cli) {
+      clienteActual = cli;
+      if (!cli) {
+        fichaEl.style.display = "none";
+        return;
+      }
+      fichaEl.style.display = "block";
+      cliNombre.textContent = `${cli.nombre} ${cli.apellido || ""}`.trim();
+      cliCodigo.textContent = cli.codigo;
+      cliTelefono.textContent = cli.telefono || "---";
+      cliEstadoCita.textContent = cli.estadoCita || "Pendiente";
+      cliSellos.textContent = cli.sellos || 0;
+      cliCortes.textContent = cli.cortes || 0;
+    }
+
+    function extraerCodigo(texto) {
+      const limpio = (texto || "").trim();
+      try {
+        if (limpio.startsWith("http")) {
+          const url = new URL(limpio);
+          const codParam = url.searchParams.get("codigo");
+          if (codParam) return codParam.trim().toLowerCase();
+        }
+      } catch (_) {}
+      return limpio.toLowerCase();
+    }
+
+    function buscar(codigo) {
+      const cod = extraerCodigo(codigo || inputBuscar.value);
+      const clientes = leer(STORAGE_CLIENTES);
+      const encontrado = clientes.find((c) => c.codigo.toLowerCase() === cod);
+      if (!encontrado) {
+        estadoAdmin.textContent = `No se encontró cliente con código "${cod}".`;
+        pintarFicha(null);
+        return;
+      }
+      estadoAdmin.textContent = `Cliente encontrado: ${encontrado.codigo}`;
+      pintarFicha(encontrado);
+    }
+
+    function actualizarCliente(fn) {
+      if (!clienteActual) return;
+      const clientes = leer(STORAGE_CLIENTES);
+      const idx = clientes.findIndex((c) => c.codigo === clienteActual.codigo);
+      if (idx < 0) return;
+      clientes[idx] = fn({ ...clientes[idx] });
+      guardar(STORAGE_CLIENTES, clientes);
+      guardarRespaldoActual();
+      pintarFicha(clientes[idx]);
+      renderLista();
+    }
+
+    function cambiarEstadoCita(idxReal) {
+      const citas = leer(STORAGE_CITAS);
+      if (!citas[idxReal]) return;
+      const actual = citas[idxReal].estado || "Pendiente";
+      const siguiente = actual === "Pendiente" ? "Atendida" : "Pendiente";
+      citas[idxReal].estado = siguiente;
+      guardar(STORAGE_CITAS, citas);
+
+      const clientes = leer(STORAGE_CLIENTES);
+      const cIdx = clientes.findIndex((c) => c.codigo === citas[idxReal].codigo);
+      if (cIdx >= 0) {
+        clientes[cIdx].estadoCita = siguiente;
+        guardar(STORAGE_CLIENTES, clientes);
+        if (clienteActual && clienteActual.codigo === clientes[cIdx].codigo) {
+          pintarFicha(clientes[cIdx]);
+        }
+      }
+      guardarRespaldoActual();
+      estadoAdmin.textContent = `Cita marcada como: ${siguiente}`;
+      renderLista();
+    }
+
+    function borrarCita(idxReal) {
+      guardarRespaldoActual();
+      const citas = leer(STORAGE_CITAS);
+      if (!citas[idxReal]) return;
+      const borrada = citas[idxReal];
+      citas.splice(idxReal, 1);
+      guardar(STORAGE_CITAS, citas);
+      estadoAdmin.textContent = `Ficha de ${borrada.nombre} (${borrada.hora}) borrada. Puedes usar "Recuperar datos" si lo ocupas.`;
+      renderLista();
+    }
+
+    function renderLista() {
+      const citas = leer(STORAGE_CITAS);
+      if (!citas.length) {
+        listaAgendados.innerHTML = "<p>Aún no hay fichas agendadas.</p>";
+        return;
+      }
+      listaAgendados.innerHTML = citas
+        .map((c, idxReal) => ({ c, idxReal }))
+        .reverse()
+        .map(
+          ({ c, idxReal }) => `
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div>
+                <strong>${c.nombre} ${c.apellido || ""}</strong> — <span style="color:#ffdf70;">${c.fechaMX || c.fecha} a las ${c.hora}</span>
+                <span style="margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(212,175,55,0.4);font-size:0.8rem;">${c.estado || "Pendiente"}</span>
+              </div>
+              <button type="button" title="Borrar ficha" onclick="window.__borrarCita(${idxReal})">🗑️</button>
+            </div>
+            <small>Código: <strong>${c.codigo}</strong> | Tel: ${c.telefono} | $99 MXN | ${c.conEspera ? "Con espera" : "Turno normal"}</small><br/>
+            <button type="button" onclick="window.__verCliente('${c.codigo}')">Abrir ficha</button>
+            <button type="button" onclick="window.__toggleEstado(${idxReal})">Cambiar a ${(c.estado || "Pendiente") === "Pendiente" ? "Atendida" : "Pendiente"}</button>
+          </div>`
+        )
+        .join("");
+    }
+
+    async function iniciarCamara() {
+      if (!window.Html5Qrcode) {
+        estadoAdmin.textContent = "El lector QR no cargó aún. Recarga o escribe el código.";
+        return;
+      }
+      try {
+        if (!html5QrCode) {
+          html5QrCode = new window.Html5Qrcode("lector-qr");
+        }
+        estadoAdmin.textContent = "Abriendo cámara...";
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decodedText) => {
+            const cod = extraerCodigo(decodedText);
+            inputBuscar.value = cod;
+            buscar(cod);
+            detenerCamara();
+          },
+          () => {}
+        );
+      } catch (e) {
+        estadoAdmin.textContent = "No se pudo acceder a la cámara (o ya está activa).";
+      }
+    }
+
+    async function detenerCamara() {
+      if (html5QrCode && html5QrCode.isScanning) {
+        try {
+          await html5QrCode.stop();
+          estadoAdmin.textContent = "Cámara detenida.";
+        } catch (_) {}
+      }
+    }
+
+    window.__verCliente = (codigo) => {
+      inputBuscar.value = codigo;
+      buscar(codigo);
+    };
+    window.__toggleEstado = (idxReal) => cambiarEstadoCita(idxReal);
+    window.__borrarCita = (idxReal) => borrarCita(idxReal);
+
+    btnBuscar.addEventListener("click", () => buscar());
+    if (btnEscanear) btnEscanear.addEventListener("click", iniciarCamara);
+    if (btnDetener) btnDetener.addEventListener("click", detenerCamara);
+
+    if (btnAbrirPerfil) {
+      btnAbrirPerfil.addEventListener("click", () => {
+        if (!clienteActual) return;
+        window.location.href = `../pc/perfil.html?codigo=${encodeURIComponent(clienteActual.codigo)}`;
+      });
+    }
+
+    if (btnCerrarFicha) {
+      btnCerrarFicha.addEventListener("click", () => {
+        pintarFicha(null);
+        estadoAdmin.textContent = "Ficha cerrada.";
+      });
+    }
+
+    btnSumarSello.addEventListener("click", () => {
+      actualizarCliente((c) => ({ ...c, sellos: Math.min(5, (c.sellos || 0) + 1) }));
+    });
+    btnSumarCorte.addEventListener("click", () => {
+      actualizarCliente((c) => ({ ...c, cortes: (c.cortes || 0) + 1 }));
+    });
+    btnCanjear.addEventListener("click", () => {
+      actualizarCliente((c) => {
+        if ((c.sellos || 0) < 5) {
+          estadoAdmin.textContent = "Necesita 5 sellos para canjear el corte gratis.";
+          return c;
+        }
+        estadoAdmin.textContent = "¡Corte gratis canjeado! Sellos reiniciados a 0.";
+        return { ...c, sellos: 0, cortes: (c.cortes || 0) + 1 };
+      });
+    });
+
+    btnBorrarCliente.addEventListener("click", () => {
+      if (!clienteActual) return;
+      guardarRespaldoActual();
+      const cod = clienteActual.codigo;
+      guardar(STORAGE_CLIENTES, leer(STORAGE_CLIENTES).filter((c) => c.codigo !== cod));
+      guardar(STORAGE_CITAS, leer(STORAGE_CITAS).filter((c) => c.codigo !== cod));
+      pintarFicha(null);
+      estadoAdmin.textContent = `Cliente ${cod} y sus fichas eliminados.`;
+      renderLista();
+    });
+
+    btnLimpiarTodo.addEventListener("click", () => {
+      guardarRespaldoActual();
+      guardar(STORAGE_CITAS, []);
+      guardar(STORAGE_CLIENTES, []);
+      pintarFicha(null);
+      estadoAdmin.textContent = "Todo eliminado. Si ocupas volver atrás, dale a Recuperar datos.";
+      renderLista();
+    });
+
+    btnRecuperarDatos.addEventListener("click", () => {
+      const respaldoCitas = leer(STORAGE_RESPALDO_CITAS);
+      const respaldoClientes = leer(STORAGE_RESPALDO_CLIENTES);
+      if (!respaldoCitas.length && !respaldoClientes.length) {
+        estadoAdmin.textContent = "No hay respaldo guardado para recuperar.";
+        return;
+      }
+      guardar(STORAGE_CITAS, respaldoCitas);
+      guardar(STORAGE_CLIENTES, respaldoClientes);
+      estadoAdmin.textContent = `Datos recuperados (${respaldoCitas.length} fichas).`;
+      renderLista();
+    });
+
+    guardarRespaldoActual();
+    renderLista();
+  </script>
+</body>
+</html>

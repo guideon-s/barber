@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil del Cliente — El Barbero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="graffiti-overlay"></div>
+
+  <header>
+    <div class="marca">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQhkZ4fiYPASrH7R5TQPnJFq9RLlEqQnv2SteIL1uojozAX8ro0JY3p7c&s=10" alt="Logo El Barbero" class="logo-mini" />
+      <div>
+        <strong>EL BARBERO</strong>
+        <small>RESPETO Y HONOR • PERFIL VIP</small>
+      </div>
+    </div>
+
+    <nav class="nav-botones">
+      <a href="./index.html" class="nav-btn">Página principal</a>
+      <a href="./index.html#agendar" class="nav-btn nav-btn-oro">Agendar cita</a>
+      <a href="./contacto.html" class="nav-btn">Contacto</a>
+    </nav>
+
+    <span class="badge-precio">Corte general: $99 MXN</span>
+  </header>
+
+  <main style="grid-template-columns: 1fr; max-width: 760px;">
+    <section class="card">
+      <span class="tag-graffiti">PERFIL DE LEALTAD</span>
+      <h1 id="perfil-nombre">Cargando perfil...</h1>
+      <p class="codigo-box">Código: <strong id="perfil-codigo">---</strong></p>
+      <p style="margin:4px 0;color:var(--suave);">Teléfono: <strong id="perfil-telefono" style="color:var(--texto);">---</strong> | Cortes acumulados: <strong id="perfil-cortes" style="color:var(--oro-brillo);">0</strong></p>
+      <p id="perfil-texto-sellos">0 / 5 sellos</p>
+      <div id="perfil-sellos"></div>
+    </section>
+
+    <section class="card">
+      <span class="tag-graffiti">HISTORIAL</span>
+      <h2>Mis fichas agendadas</h2>
+      <div id="perfil-fichas">Cargando fichas...</div>
+    </section>
+  </main>
+
+  <script type="module">
+    const STORAGE_CITAS = "barber_citas_locales";
+    const STORAGE_CLIENTES = "barber_clientes_locales";
+
+    const params = new URLSearchParams(window.location.search);
+    const codigoParam = (params.get("codigo") || localStorage.getItem("barber_codigo") || "").trim().toLowerCase();
+
+    const nombreEl = document.getElementById("perfil-nombre");
+    const codigoEl = document.getElementById("perfil-codigo");
+    const telefonoEl = document.getElementById("perfil-telefono");
+    const cortesEl = document.getElementById("perfil-cortes");
+    const textoSellosEl = document.getElementById("perfil-texto-sellos");
+    const sellosBox = document.getElementById("perfil-sellos");
+    const fichasBox = document.getElementById("perfil-fichas");
+
+    function leer(clave) {
+      try {
+        return JSON.parse(localStorage.getItem(clave) || "[]");
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function pintarSellosPerfil(sellos = 0) {
+      sellosBox.innerHTML = "";
+      sellosBox.style.display = "flex";
+      sellosBox.style.gap = "10px";
+      sellosBox.style.margin = "6px 0";
+      const total = Math.max(0, Math.min(5, Number(sellos) || 0));
+      for (let i = 1; i <= 5; i++) {
+        const span = document.createElement("span");
+        span.className = "sello" + (i <= total ? " activo" : "");
+        span.textContent = i;
+        sellosBox.appendChild(span);
+      }
+      textoSellosEl.textContent = `${total} / 5 sellos`;
+    }
+
+    const clientes = leer(STORAGE_CLIENTES);
+    const citas = leer(STORAGE_CITAS).filter((c) => (c.codigo || "").toLowerCase() === codigoParam);
+    const cliente = clientes.find((c) => (c.codigo || "").toLowerCase() === codigoParam) || citas[0] || null;
+
+    if (!cliente) {
+      nombreEl.textContent = "Perfil no encontrado";
+      codigoEl.textContent = codigoParam || "---";
+      pintarSellosPerfil(0);
+      fichasBox.innerHTML = "<p style='color:var(--suave);'>No hay fichas registradas para este código en este dispositivo.</p>";
+    } else {
+      nombreEl.textContent = `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim() || "Cliente";
+      codigoEl.textContent = cliente.codigo;
+      telefonoEl.textContent = cliente.telefono || "---";
+      cortesEl.textContent = cliente.cortes || 0;
+      pintarSellosPerfil(cliente.sellos || 0);
+
+      if (!citas.length) {
+        fichasBox.innerHTML = "<p style='color:var(--suave);'>Aún no tienes fichas agendadas.</p>";
+      } else {
+        fichasBox.innerHTML = citas
+          .slice()
+          .reverse()
+          .map(
+            (f) => `
+            <div class="ficha-item">
+              <div>
+                <strong>${f.fechaMX || f.fecha} — ${f.hora}</strong>
+                <small>Estado: ${f.estado || "Pendiente"} | ${f.conEspera ? "Con espera" : "Turno normal"} | $${f.precio || 99} MXN</small>
+              </div>
+            </div>`
+          )
+          .join("");
+      }
+    }
+  </script>
+</body>
+</html>

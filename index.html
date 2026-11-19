@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barber Shop</title>
+  <script>
+    (function () {
+      const esMovilOTablet =
+        window.innerWidth <= 1024 ||
+        /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent);
+      window.location.replace(esMovilOTablet ? "./movil/index.html" : "./pc/index.html");
+    })();
+  </script>
+</head>
+<body>
+  <p>Cargando Barber Shop...</p>
+</body>
+</html>
