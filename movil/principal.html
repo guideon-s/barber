@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Barbero — Principal Móvil</title>
+  <link rel="icon" href="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121216;
+      --surface-2: #18181f;
+      --border: rgba(245, 197, 24, 0.22);
+      --border-bright: rgba(245, 197, 24, 0.72);
+      --gold: #f5c518;
+      --gold-soft: rgba(245, 197, 24, 0.12);
+      --text: #f4f4f6;
+      --muted: #a1a1aa;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #1d1807 0%, var(--bg) 52%);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      line-height: 1.4;
+    }
+
+    .logo-header {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border-bright);
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(9, 9, 11, 0.92);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: "Cinzel", serif;
+      font-weight: 800;
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.9rem;
+      letter-spacing: 0.4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      position: relative;
+      overflow: hidden;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.72rem;
+      padding: 4px 7px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:active {
+      border-color: var(--border-bright);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .nav-cta {
+      background: var(--gold) !important;
+      color: #111111 !important;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 12px 10px 44px;
+    }
+
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 12px 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.64rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gold);
+      background: var(--gold-soft);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    h1, h2, h3 {
+      font-family: "Cinzel", serif;
+      margin: 0;
+      letter-spacing: 0.3px;
+    }
+
+    h1 {
+      font-size: 1.05rem;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    h2 {
+      font-size: 1.02rem;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+
+    h3 {
+      font-size: 0.84rem;
+      color: #ffffff;
+    }
+
+    .lead {
+      color: var(--muted);
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+    }
+
+    .acceso-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .acceso-card {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.25s ease;
+    }
+
+    .acceso-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        140px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(245, 197, 24, 0.22),
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .acceso-card:hover,
+    .acceso-card:active {
+      transform: translateY(-2px);
+      border-color: var(--border-bright);
+      box-shadow: 0 6px 16px rgba(245, 197, 24, 0.16);
+    }
+
+    .acceso-card:hover::before,
+    .acceso-card:active::before {
+      opacity: 1;
+    }
+
+    .acceso-card p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.3;
+    }
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      padding: 7px 9px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.74rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.22s ease;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -130%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(
+        115deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.38) 50%,
+        transparent 100%
+      );
+      transform: skewX(-20deg);
+      transition: left 0.45s ease;
+      pointer-events: none;
+    }
+
+    .btn:hover,
+    .btn:active {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(245, 197, 24, 0.24);
+    }
+
+    .btn:hover::after,
+    .btn:active::after {
+      left: 145%;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #111111;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--border);
+    }
+
+    section {
+      margin-top: 22px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+    }
+
+    .grid-movil {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.25s ease;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: radial-gradient(
+        150px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(245, 197, 24, 0.22),
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -135%;
+      width: 60%;
+      height: 100%;
+      z-index: 4;
+      background: linear-gradient(
+        110deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.16) 50%,
+        transparent 100%
+      );
+      transform: skewX(-20deg);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+
+    .card:hover,
+    .card:active {
+      transform: translateY(-3px);
+      border-color: var(--border-bright);
+      box-shadow: 0 8px 20px rgba(245, 197, 24, 0.16);
+    }
+
+    .card:hover::before,
+    .card:active::before {
+      opacity: 1;
+    }
+
+    .card:hover::after,
+    .card:active::after {
+      left: 150%;
+    }
+
+    .card img {
+      width: 100%;
+      height: 126px;
+      object-fit: cover;
+      background: var(--surface-2);
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover img,
+    .card:active img {
+      transform: scale(1.04);
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 2;
+      padding: 9px 10px 11px;
+      background: var(--surface);
+    }
+
+    .card-title {
+      font-size: 0.84rem;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+
+    .card-desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.73rem;
+      line-height: 1.32;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#inicio">
+        <img class="logo-header" src="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" alt="Logo El Barbero" />
+        <span>EL BARBERO</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#acceso" class="nav-cta">Agendar</a>
+        <a href="#cortes">Cortes</a>
+        <a href="#barbas">Barbas</a>
+        <a href="#antes-despues">Antes/Después</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="inicio">
+    <section class="hero" id="acceso">
+      <span class="tag">17:00–22:00 • $99 MXN</span>
+      <h1>ESTILO Y PRECISIÓN</h1>
+      <p class="lead">Entra con tu código si ya viniste o regístrate si es tu primera vez.</p>
+
+      <div class="acceso-grid">
+        <div class="acceso-card">
+          <div>
+            <h3>Iniciar sesión</h3>
+            <p>Con tu código único y solo fecha y hora.</p>
+          </div>
+          <a class="btn btn-gold" href="../agendar-codigo.html">Con código</a>
+        </div>
+
+        <div class="acceso-card">
+          <div>
+            <h3>Registrarse</h3>
+            <p>Nuevo cliente y código de sellos.</p>
+          </div>
+          <a class="btn btn-outline" href="./index.html">Nuevo cliente</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="cortes">
+      <h2>ESTILOS DE CORTE</h2>
+      <p class="section-sub">Elige tu estilo favorito y agenda de 17:00 a 22:00.</p>
+      <div class="grid-movil" id="lista-cortes"></div>
+    </section>
+
+    <section id="barbas">
+      <h2>ESTILOS DE BARBA</h2>
+      <p class="section-sub">Contornos y estilos limpios para tu barba.</p>
+      <div class="grid-movil" id="lista-barbas"></div>
+    </section>
+
+    <section id="antes-despues">
+      <h2>ANTES Y DESPUÉS</h2>
+      <p class="section-sub">Cambios de look reales.</p>
+      <div class="grid-movil" id="lista-cambio"></div>
+    </section>
+
+    <section id="contacto">
+      <div class="info-box">
+        <div>
+          <h2>CONTACTO Y HORARIO</h2>
+          <p class="section-sub" style="margin: 4px 0 0;">
+            Horario: <strong>17:00 a 22:00</strong> • Corte: <strong>$99 MXN</strong>.
+          </p>
+        </div>
+        <a class="btn btn-gold" href="../pc/contacto.html">Ir a contacto</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CORTES = [
+      {
+        nombre: "Taper fade",
+        desc: "Degradado gradual en patillas y nuca conservando longitud y densidad arriba y en laterales.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsC4n00I_Idc4T2bfreeW-o8CH6vZqXcEOyKfICwTuOgUQ3MhmdKEQLUh7&s=10"
+      },
+      {
+        nombre: "Corte clásico",
+        desc: "Laterales y nuca cortos, contornos limpios y parte superior más larga fácil de peinar.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSADAJta-0AE5E0ATgpf2fbUYxyMcS0eD7UfXpqSrmO9jtFREWBmmh9i_w&s=10"
+      },
+      {
+        nombre: "Fringe",
+        desc: "Flequillo hacia adelante sobre la frente con textura y movimiento natural y laterales cortos o degradados.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDP66ogE2nikElqR_harlrYk3MKRiZzJv4z6hLbAjBKA&s=10"
+      },
+      {
+        nombre: "Mod cut",
+        desc: "Inspiración retro (años 60 y mod británico) con volumen arriba, flequillo marcado y laterales texturizados.",
+        img: "https://i.pinimg.com/236x/22/3d/c1/223dc1181a1075dab53fae75e65e6566.jpg"
+      },
+      {
+        nombre: "Middle part",
+        desc: "Corte cortina de largo medio con raya al centro cayendo a ambos lados como libro abierto.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_0jSeNGeGsLdhMdTzPcGR5qZXNjK-KXHMp8BbuNdhg61KTChKkJ_Pg3rv&s=10"
+      },
+      {
+        nombre: "Corte escolar",
+        desc: "Clásico, limpio y de bajo mantenimiento con laterales y nuca cortos y parte superior ligeramente más larga.",
+        img: "https://i.pinimg.com/474x/a5/76/42/a5764227c92d1efeda12ef92ddaf51ec.jpg"
+      },
+      {
+        nombre: "Buzz cut",
+        desc: "Corte de cabello muy corto o rapado.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqVtmCWniqRVZt-Uqpo5Zsz8xZjmODbn8d1P575hbKkA&s=10"
+      },
+      {
+        nombre: "French crop",
+        desc: "Corto y moderno con laterales y nuca degradados o recortados, parte superior texturizada y flequillo al frente.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSeWViycGac-va_KvMG0keit5Drx9NGifotfTtJNzw1nuoSZoCXcKqoU4&s=10"
+      }
+    ];
+
+    const BARBAS = [
+      {
+        nombre: "Barba de tres días",
+        desc: "Vello corto y uniforme de pocos días con look natural y definido.",
+        img: "https://www.infobae.com/resizer/v2/QBOSHH6MBJGVBJ56CVTYXJYNCU.jpg?auth=8cca8b3a9631ce66ce9dbad2e1b325e1a56e72401bc575f62a0c5f8bdd611764&smart=true&width=350&height=350&quality=85"
+      },
+      {
+        nombre: "Candado",
+        desc: "Concentrada alrededor de boca y barbilla con líneas marcadas.",
+        img: "https://i.pinimg.com/736x/14/1a/e8/141ae8bd41f3eb73ef09238d0a6c69d5.jpg"
+      },
+      {
+        nombre: "Perilla",
+        desc: "Enfocada en la barbilla con contorno limpio para estilizar el mentón.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTp83e6nz5-bmnG31-N32VSLiRSvNTINpghQnFaaEkxccL2LXrl4ocYX8Co&s=10"
+      },
+      {
+        nombre: "Van Dyke",
+        desc: "Bigote perfilado independiente de una barbilla afilada y recortada.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwTOxD6oFEyKuw44-lTHiz-13a9iL4fAfuisc9qXCObRKoHup-F_5CJ3s7&s=10"
+      },
+      {
+        nombre: "Balbo",
+        desc: "Recortada en mandíbula y barbilla separada del bigote con bordes limpios.",
+        img: "https://heyjoe.es/wp-content/uploads/barba-balto.jpg"
+      },
+      {
+        nombre: "Cola de pato (ducktail)",
+        desc: "Más larga y afilada en la punta de la barbilla con laterales recortados.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD3RkPSjd3s_hGj8-Lz-Rkj_EXvwbIDzN1ftq1TnFvmb3vDakAkgB1bXpj&s=10"
+      },
+      {
+        nombre: "Barba completa",
+        desc: "Cobertura uniforme en mejillas, bigote y barbilla con contornos trabajados.",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQB7ZabOn-RrURhanWwgluDyN8TOygOQ958iSmKqLzGLfE4XY5BT4kqMOU&s=10"
+      },
+      {
+        nombre: "Italiana",
+        desc: "Barba bien cuidada y conectada con el bigote, de largo medio y bordes pulidos.",
+        img: "https://i.pinimg.com/236x/aa/76/ac/aa76ac6bca454bb0ce5abdb750f29c6f.jpg"
+      }
+    ];
+
+    const ANTES_DESPUES = [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2CfWyUs2mEIZig9Pg9-vk0lK7xBQ5KD8bX72rinp3FA&s=10",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNuBKUaEww0NJRFqE_-z1uazHs2x00ocZ5dYQKEwuO5Wli3rV-JgCPs-k&s=10",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKPeiyzhjLLjxybefimaSuMFyyxP9_7iD8mwDoIiSTdsjmkh0cn5e3BZI&s=10",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVClt9-EZGAjrJzEPX1j3PMfZecWQ6u06DfE8v9v4w1wb1cVIAGgugS-g&s=10",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVtZZ6bk4NM1OGQVqa6c5UXGfvKM32kQiexGZwE-xSlpqAo2zUE-Wd-alc&s=10",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-T4-Ha5udKsoPeqnrpziYSKcR9DI5_m_41SDZO2z4Wg&s"
+    ];
+
+    function renderEstilos(items, contenedorId) {
+      const cont = document.getElementById(contenedorId);
+      cont.innerHTML = items.map((item) => `
+        <article class="card">
+          <img src="${item.img}" alt="${item.nombre}" loading="lazy" />
+          <div class="card-body">
+            <h3 class="card-title">${item.nombre}</h3>
+            <p class="card-desc">${item.desc}</p>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderAntesDespues() {
+      const cont = document.getElementById("lista-cambio");
+      cont.innerHTML = ANTES_DESPUES.map((url, idx) => `
+        <article class="card">
+          <img src="${url}" alt="Antes y después ${idx + 1}" loading="lazy" />
+          <div class="card-body">
+            <h3 class="card-title">Cambio #${idx + 1}</h3>
+            <p class="card-desc">Antes y después en la barbería.</p>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function activarDestelloInteractivo() {
+      const elementos = document.querySelectorAll(".card, .acceso-card");
+      elementos.forEach((el) => {
+        const moverLuz = (clientX, clientY) => {
+          const rect = el.getBoundingClientRect();
+          el.style.setProperty("--mx", `${clientX - rect.left}px`);
+          el.style.setProperty("--my", `${clientY - rect.top}px`);
+        };
+        el.addEventListener("pointermove", (e) => moverLuz(e.clientX, e.clientY));
+        el.addEventListener("pointerdown", (e) => moverLuz(e.clientX, e.clientY));
+      });
+    }
+
+    renderEstilos(CORTES, "lista-cortes");
+    renderEstilos(BARBAS, "lista-barbas");
+    renderAntesDespues();
+    activarDestelloInteractivo();
+  </script>
+</body>
+</html>

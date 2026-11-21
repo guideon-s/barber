@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Barbero</title>
+  <link rel="icon" href="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #09090b;
+      color: #f5c518;
+      font-family: sans-serif;
+    }
+  </style>
+  <script>
+    const esMovil = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    window.location.replace(esMovil ? "./movil/principal.html" : "./pc/principal.html");
+  </script>
+</head>
+<body>
+  <p>Cargando...</p>
+</body>
+</html>

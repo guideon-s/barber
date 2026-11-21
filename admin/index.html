@@ -33,7 +33,7 @@
       <button id="btn-escanear" type="button">Escanear QR</button>
       <button id="btn-detener" type="button">Detener cámara</button>
       <div id="lector-qr"></div>
-      <p id="estado-admin">Listo para buscar.</p>
+      <p id="estado-admin">Conectando con Firestore...</p>
     </section>
 
     <section id="ficha-cliente" style="display: none;">
@@ -53,25 +53,27 @@
     <section>
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
         <h2 style="margin:0;">Fichas agendadas</h2>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          <button id="btn-recuperar-datos" type="button">♻️ Recuperar datos</button>
-          <button id="btn-limpiar-todo" type="button">🗑️ Eliminar todo</button>
-        </div>
+        <button id="btn-recargar" type="button">🔄 Actualizar lista</button>
       </div>
-      <div id="lista-agendados" style="margin-top:12px;">Cargando citas...</div>
+      <div id="lista-agendados" style="margin-top:12px;">Consultando base de datos...</div>
     </section>
   </main>
 
   <script type="module">
-    const STORAGE_CITAS = "barber_citas_locales";
-    const STORAGE_CLIENTES = "barber_clientes_locales";
-    const STORAGE_RESPALDO_CITAS = "barber_respaldo_citas";
-    const STORAGE_RESPALDO_CLIENTES = "barber_respaldo_clientes";
+    import {
+      obtenerTodasLasCitas,
+      buscarClientePorCodigo,
+      actualizarClienteNube,
+      actualizarCitaNube,
+      borrarCitaNube,
+      borrarClienteNube
+    } from "../js/db.js";
 
     const inputBuscar = document.getElementById("codigo-buscar");
     const btnBuscar = document.getElementById("btn-buscar");
     const btnEscanear = document.getElementById("btn-escanear");
     const btnDetener = document.getElementById("btn-detener");
+    const btnRecargar = document.getElementById("btn-recargar");
     const estadoAdmin = document.getElementById("estado-admin");
     const fichaEl = document.getElementById("ficha-cliente");
     const cliNombre = document.getElementById("cli-nombre");
@@ -86,31 +88,11 @@
     const btnAbrirPerfil = document.getElementById("btn-abrir-perfil");
     const btnCerrarFicha = document.getElementById("btn-cerrar-ficha");
     const btnBorrarCliente = document.getElementById("btn-borrar-cliente");
-    const btnLimpiarTodo = document.getElementById("btn-limpiar-todo");
-    const btnRecuperarDatos = document.getElementById("btn-recuperar-datos");
     const listaAgendados = document.getElementById("lista-agendados");
 
     let clienteActual = null;
+    let citasCache = [];
     let html5QrCode = null;
-
-    function leer(clave) {
-      try {
-        return JSON.parse(localStorage.getItem(clave) || "[]");
-      } catch (_) {
-        return [];
-      }
-    }
-
-    function guardar(clave, val) {
-      localStorage.setItem(clave, JSON.stringify(val));
-    }
-
-    function guardarRespaldoActual() {
-      const citasActuales = leer(STORAGE_CITAS);
-      const clientesActuales = leer(STORAGE_CLIENTES);
-      if (citasActuales.length) guardar(STORAGE_RESPALDO_CITAS, citasActuales);
-      if (clientesActuales.length) guardar(STORAGE_RESPALDO_CLIENTES, clientesActuales);
-    }
 
     function pintarFicha(cli) {
       clienteActual = cli;
@@ -139,100 +121,91 @@
       return limpio.toLowerCase();
     }
 
-    function buscar(codigo) {
+    async function buscar(codigo) {
       const cod = extraerCodigo(codigo || inputBuscar.value);
-      const clientes = leer(STORAGE_CLIENTES);
-      const encontrado = clientes.find((c) => c.codigo.toLowerCase() === cod);
-      if (!encontrado) {
-        estadoAdmin.textContent = `No se encontró cliente con código "${cod}".`;
-        pintarFicha(null);
-        return;
-      }
-      estadoAdmin.textContent = `Cliente encontrado: ${encontrado.codigo}`;
-      pintarFicha(encontrado);
-    }
-
-    function actualizarCliente(fn) {
-      if (!clienteActual) return;
-      const clientes = leer(STORAGE_CLIENTES);
-      const idx = clientes.findIndex((c) => c.codigo === clienteActual.codigo);
-      if (idx < 0) return;
-      clientes[idx] = fn({ ...clientes[idx] });
-      guardar(STORAGE_CLIENTES, clientes);
-      guardarRespaldoActual();
-      pintarFicha(clientes[idx]);
-      renderLista();
-    }
-
-    function cambiarEstadoCita(idxReal) {
-      const citas = leer(STORAGE_CITAS);
-      if (!citas[idxReal]) return;
-      const actual = citas[idxReal].estado || "Pendiente";
-      const siguiente = actual === "Pendiente" ? "Atendida" : "Pendiente";
-      citas[idxReal].estado = siguiente;
-      guardar(STORAGE_CITAS, citas);
-
-      const clientes = leer(STORAGE_CLIENTES);
-      const cIdx = clientes.findIndex((c) => c.codigo === citas[idxReal].codigo);
-      if (cIdx >= 0) {
-        clientes[cIdx].estadoCita = siguiente;
-        guardar(STORAGE_CLIENTES, clientes);
-        if (clienteActual && clienteActual.codigo === clientes[cIdx].codigo) {
-          pintarFicha(clientes[cIdx]);
+      if (!cod) return;
+      estadoAdmin.textContent = "Buscando en la nube...";
+      try {
+        const encontrado = await buscarClientePorCodigo(cod);
+        if (!encontrado) {
+          estadoAdmin.textContent = `No se encontró cliente con código "${cod}".`;
+          pintarFicha(null);
+          return;
         }
+        estadoAdmin.textContent = `Cliente encontrado: ${encontrado.codigo}`;
+        pintarFicha(encontrado);
+      } catch (err) {
+        estadoAdmin.textContent = `Error al buscar: ${err.message || err}`;
       }
-      guardarRespaldoActual();
+    }
+
+    async function actualizarCliente(fn) {
+      if (!clienteActual) return;
+      const nuevo = fn({ ...clienteActual });
+      await actualizarClienteNube(clienteActual.codigo, nuevo);
+      pintarFicha(nuevo);
+      await renderLista();
+    }
+
+    async function cambiarEstadoCita(idx) {
+      const c = citasCache[idx];
+      if (!c) return;
+      const siguiente = (c.estado || "Pendiente") === "Pendiente" ? "Atendida" : "Pendiente";
+      await actualizarCitaNube(c.firestoreId, { estado: siguiente });
+      await actualizarClienteNube(c.codigo, { estadoCita: siguiente });
+      if (clienteActual && clienteActual.codigo === c.codigo) {
+        clienteActual.estadoCita = siguiente;
+        pintarFicha(clienteActual);
+      }
       estadoAdmin.textContent = `Cita marcada como: ${siguiente}`;
-      renderLista();
+      await renderLista();
     }
 
-    function borrarCita(idxReal) {
-      guardarRespaldoActual();
-      const citas = leer(STORAGE_CITAS);
-      if (!citas[idxReal]) return;
-      const borrada = citas[idxReal];
-      citas.splice(idxReal, 1);
-      guardar(STORAGE_CITAS, citas);
-      estadoAdmin.textContent = `Ficha de ${borrada.nombre} (${borrada.hora}) borrada. Puedes usar "Recuperar datos" si lo ocupas.`;
-      renderLista();
+    async function borrarCita(idx) {
+      const c = citasCache[idx];
+      if (!c) return;
+      await borrarCitaNube(c.firestoreId);
+      estadoAdmin.textContent = `Ficha de ${c.nombre} (${c.hora}) eliminada.`;
+      await renderLista();
     }
 
-    function renderLista() {
-      const citas = leer(STORAGE_CITAS);
-      if (!citas.length) {
-        listaAgendados.innerHTML = "<p>Aún no hay fichas agendadas.</p>";
-        return;
-      }
-      listaAgendados.innerHTML = citas
-        .map((c, idxReal) => ({ c, idxReal }))
-        .reverse()
-        .map(
-          ({ c, idxReal }) => `
-          <div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <div>
-                <strong>${c.nombre} ${c.apellido || ""}</strong> — <span style="color:#ffdf70;">${c.fechaMX || c.fecha} a las ${c.hora}</span>
-                <span style="margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(212,175,55,0.4);font-size:0.8rem;">${c.estado || "Pendiente"}</span>
+    async function renderLista() {
+      try {
+        citasCache = await obtenerTodasLasCitas();
+        citasCache.sort((a, b) => (b.id || "").localeCompare(a.id || ""));
+        if (!citasCache.length) {
+          listaAgendados.innerHTML = "<p>No hay fichas agendadas en la base de datos.</p>";
+          estadoAdmin.textContent = "Conectado a Firestore (0 citas registradas).";
+          return;
+        }
+        estadoAdmin.textContent = `Conectado a Firestore (${citasCache.length} citas).`;
+        listaAgendados.innerHTML = citasCache
+          .map(
+            (c, idx) => `
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <div>
+                  <strong>${c.nombre} ${c.apellido || ""}</strong> — <span style="color:#ffdf70;">${c.fechaMX || c.fecha} a las ${c.hora}</span>
+                  <span style="margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(212,175,55,0.4);font-size:0.8rem;">${c.estado || "Pendiente"}</span>
+                </div>
+                <button type="button" title="Borrar ficha" onclick="window.__borrarCita(${idx})">🗑️</button>
               </div>
-              <button type="button" title="Borrar ficha" onclick="window.__borrarCita(${idxReal})">🗑️</button>
-            </div>
-            <small>Código: <strong>${c.codigo}</strong> | Tel: ${c.telefono} | $99 MXN | ${c.conEspera ? "Con espera" : "Turno normal"}</small><br/>
-            <button type="button" onclick="window.__verCliente('${c.codigo}')">Abrir ficha</button>
-            <button type="button" onclick="window.__toggleEstado(${idxReal})">Cambiar a ${(c.estado || "Pendiente") === "Pendiente" ? "Atendida" : "Pendiente"}</button>
-          </div>`
-        )
-        .join("");
+              <small>Código: <strong>${c.codigo}</strong> | Tel: ${c.telefono} | $99 MXN | ${c.conEspera ? "Con espera" : "Turno normal"}</small><br/>
+              <button type="button" onclick="window.__verCliente('${c.codigo}')">Abrir ficha</button>
+              <button type="button" onclick="window.__toggleEstado(${idx})">Cambiar a ${(c.estado || "Pendiente") === "Pendiente" ? "Atendida" : "Pendiente"}</button>
+            </div>`
+          )
+          .join("");
+      } catch (err) {
+        listaAgendados.innerHTML = `<p>Error al cargar citas: ${err.message || err}</p>`;
+        estadoAdmin.textContent = "Revisa las reglas de Firestore o la consola (F12).";
+      }
     }
 
     async function iniciarCamara() {
-      if (!window.Html5Qrcode) {
-        estadoAdmin.textContent = "El lector QR no cargó aún. Recarga o escribe el código.";
-        return;
-      }
+      if (!window.Html5Qrcode) return;
       try {
-        if (!html5QrCode) {
-          html5QrCode = new window.Html5Qrcode("lector-qr");
-        }
+        if (!html5QrCode) html5QrCode = new window.Html5Qrcode("lector-qr");
         estadoAdmin.textContent = "Abriendo cámara...";
         await html5QrCode.start(
           { facingMode: "environment" },
@@ -245,8 +218,8 @@
           },
           () => {}
         );
-      } catch (e) {
-        estadoAdmin.textContent = "No se pudo acceder a la cámara (o ya está activa).";
+      } catch (_) {
+        estadoAdmin.textContent = "No se pudo acceder a la cámara.";
       }
     }
 
@@ -263,17 +236,18 @@
       inputBuscar.value = codigo;
       buscar(codigo);
     };
-    window.__toggleEstado = (idxReal) => cambiarEstadoCita(idxReal);
-    window.__borrarCita = (idxReal) => borrarCita(idxReal);
+    window.__toggleEstado = (idx) => cambiarEstadoCita(idx);
+    window.__borrarCita = (idx) => borrarCita(idx);
 
     btnBuscar.addEventListener("click", () => buscar());
+    if (btnRecargar) btnRecargar.addEventListener("click", renderLista);
     if (btnEscanear) btnEscanear.addEventListener("click", iniciarCamara);
     if (btnDetener) btnDetener.addEventListener("click", detenerCamara);
 
     if (btnAbrirPerfil) {
       btnAbrirPerfil.addEventListener("click", () => {
         if (!clienteActual) return;
-        window.location.href = `../pc/perfil.html?codigo=${encodeURIComponent(clienteActual.codigo)}`;
+        window.location.href = `../pc/perfil.html?codigo=${encodeURIComponent(clienteActual.codigo)}&from=admin`;
       });
     }
 
@@ -301,40 +275,18 @@
       });
     });
 
-    btnBorrarCliente.addEventListener("click", () => {
+    btnBorrarCliente.addEventListener("click", async () => {
       if (!clienteActual) return;
-      guardarRespaldoActual();
       const cod = clienteActual.codigo;
-      guardar(STORAGE_CLIENTES, leer(STORAGE_CLIENTES).filter((c) => c.codigo !== cod));
-      guardar(STORAGE_CITAS, leer(STORAGE_CITAS).filter((c) => c.codigo !== cod));
-      pintarFicha(null);
-      estadoAdmin.textContent = `Cliente ${cod} y sus fichas eliminados.`;
-      renderLista();
-    });
-
-    btnLimpiarTodo.addEventListener("click", () => {
-      guardarRespaldoActual();
-      guardar(STORAGE_CITAS, []);
-      guardar(STORAGE_CLIENTES, []);
-      pintarFicha(null);
-      estadoAdmin.textContent = "Todo eliminado. Si ocupas volver atrás, dale a Recuperar datos.";
-      renderLista();
-    });
-
-    btnRecuperarDatos.addEventListener("click", () => {
-      const respaldoCitas = leer(STORAGE_RESPALDO_CITAS);
-      const respaldoClientes = leer(STORAGE_RESPALDO_CLIENTES);
-      if (!respaldoCitas.length && !respaldoClientes.length) {
-        estadoAdmin.textContent = "No hay respaldo guardado para recuperar.";
-        return;
+      await borrarClienteNube(cod);
+      for (const c of citasCache.filter((x) => x.codigo === cod)) {
+        await borrarCitaNube(c.firestoreId);
       }
-      guardar(STORAGE_CITAS, respaldoCitas);
-      guardar(STORAGE_CLIENTES, respaldoClientes);
-      estadoAdmin.textContent = `Datos recuperados (${respaldoCitas.length} fichas).`;
-      renderLista();
+      pintarFicha(null);
+      estadoAdmin.textContent = `Cliente ${cod} eliminado de la nube.`;
+      await renderLista();
     });
 
-    guardarRespaldoActual();
     renderLista();
   </script>
 </body>

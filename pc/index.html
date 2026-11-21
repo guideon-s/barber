@@ -1,113 +1,440 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>El Barbero — Barber Shop</title>
+  <title>El Barbero — Agenda PC</title>
+  <link rel="icon" href="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121216;
+      --surface-2: #18181f;
+      --border: rgba(245, 197, 24, 0.22);
+      --border-bright: rgba(245, 197, 24, 0.72);
+      --gold: #f5c518;
+      --gold-soft: rgba(245, 197, 24, 0.12);
+      --gold-hover: #ffd43b;
+      --text: #f4f4f6;
+      --muted: #a1a1aa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(245, 197, 24, 0.14) 0%, transparent 48%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+    }
+
+    .logo-header {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border-bright);
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(9, 9, 11, 0.92);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "Cinzel", serif;
+      color: var(--gold);
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 1.02rem;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.86rem;
+      padding: 6px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--border-bright);
+      color: var(--gold);
+    }
+
+    .nav-cta {
+      background: var(--gold) !important;
+      color: #111111 !important;
+      font-weight: 700;
+      border-color: var(--gold) !important;
+    }
+
+    .badge-precio {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      background: var(--gold-soft);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 780px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 20px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    }
+
+    .kicker {
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    h1, h2 {
+      font-family: "Cinzel", serif;
+      color: var(--gold);
+      margin: 0 0 6px;
+      letter-spacing: 0.5px;
+    }
+
+    h1 { font-size: 1.55rem; }
+    h2 { font-size: 1.15rem; }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin: 0 0 16px;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: #e4e4e7;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(245, 197, 24, 0.16);
+    }
+
+    .btn-gold {
+      width: 100%;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 11px;
+      background: var(--gold);
+      color: #111111;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.22s ease;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 197, 24, 0.25);
+    }
+
+    .aviso-horario {
+      display: none;
+      margin-bottom: 12px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fecaca;
+      font-size: 0.84rem;
+    }
+
+    .msg {
+      margin-top: 10px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .msg.ok { color: #86efac; }
+    .msg.err { color: #fca5a5; }
+
+    .ticket-box {
+      background: var(--surface-2);
+      border: 1px dashed var(--border-bright);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+  </style>
 </head>
-<body id="top">
-  <div class="graffiti-overlay"></div>
-
-  <header>
-    <div class="marca">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQhkZ4fiYPASrH7R5TQPnJFq9RLlEqQnv2SteIL1uojozAX8ro0JY3p7c&s=10" alt="Logo El Barbero" class="logo-mini" />
-      <div>
-        <strong>EL BARBERO</strong>
-        <small>RESPETO Y HONOR • BARBER SHOP</small>
-      </div>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="./principal.html">
+        <img class="logo-header" src="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" alt="Logo El Barbero" />
+        <span>EL BARBERO</span>
+      </a>
+      <nav class="nav-links">
+        <a href="./principal.html">Página principal</a>
+        <a href="./index.html" class="nav-cta">Agendar cita</a>
+        <a href="../agendar-codigo.html">Con código</a>
+        <a href="./contacto.html">Contacto</a>
+      </nav>
+      <span class="badge-precio">Corte general: $99 MXN</span>
     </div>
-
-    <nav class="nav-botones">
-      <a href="#inicio" class="nav-btn">Página principal</a>
-      <a href="#agendar" class="nav-btn nav-btn-oro">Agendar cita</a>
-      <a href="./contacto.html" class="nav-btn">Contacto</a>
-    </nav>
-
-    <span class="badge-precio">Corte general: $99 MXN</span>
   </header>
 
-  <section id="inicio" class="banner-principal">
-    <div class="banner-texto">
-      <span class="tag-graffiti">CORTE & AFEITADO AUTÉNTICO</span>
-      <h1>EL BARBERO — BARBER SHOP</h1>
-      <p>Más que un corte, una obra de arte. Horario de atención: <strong>17:00 a 22:00</strong>.</p>
-      <div class="servicios-rapidos">
-        <span>✂️ Corte clásico / fade — $99 MXN</span>
-        <span>🪒 Perfilado & barba</span>
-        <span>🎟️ 5 sellos = corte gratis</span>
-      </div>
+  <main class="container">
+    <div class="grid-2">
+      <form id="form-registro-pc" class="card">
+        <div class="kicker">Registro y reserva</div>
+        <h1>AGENDAR CITA (PC)</h1>
+        <p class="sub">Nuevo cliente: completa tus datos para generar tu código de sellos y reservar tu turno.</p>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="pc-nombre">Nombre</label>
+            <input id="pc-nombre" type="text" placeholder="Ej. Juan" required />
+          </div>
+          <div class="field">
+            <label for="pc-apellido">Apellido</label>
+            <input id="pc-apellido" type="text" placeholder="Ej. Martínez" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="pc-telefono">Teléfono / WhatsApp</label>
+          <input id="pc-telefono" type="tel" placeholder="Ej. 6641234567" required />
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="pc-fecha">Fecha</label>
+            <input id="pc-fecha" type="date" required />
+          </div>
+          <div class="field">
+            <label for="pc-hora">Hora (17:00 a 22:00)</label>
+            <input id="pc-hora" type="time" required />
+          </div>
+        </div>
+
+        <div id="pc-aviso-horario" class="aviso-horario"></div>
+
+        <button type="submit" class="btn-gold">Confirmar cita ($99 MXN)</button>
+        <div id="pc-msg" class="msg">Horario de atención: lunes a domingo, 17:00 a 22:00.</div>
+      </form>
+
+      <aside class="card">
+        <div class="kicker">Comprobante</div>
+        <h2>TICKET Y CÓDIGO</h2>
+        <p class="sub">Guarda tu código para entrar más rápido en tu próxima visita.</p>
+
+        <div id="pc-ticket" class="ticket-box">
+          Aún no has generado una cita en esta sesión.
+        </div>
+      </aside>
     </div>
-  </section>
-
-  <main>
-    <section id="agendar" class="card">
-      <div class="hero-card">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQhkZ4fiYPASrH7R5TQPnJFq9RLlEqQnv2SteIL1uojozAX8ro0JY3p7c&s=10" alt="El Barbero" class="logo-hero" />
-        <div>
-          <span class="tag-graffiti">DISPONIBLE DE 17:00 A 22:00</span>
-          <h2>Agenda tu turno</h2>
-          <p>Elige el día y tu hora exacta (Ej. 17:36).</p>
-        </div>
-      </div>
-
-      <label for="nombre">Nombre</label>
-      <input id="nombre" type="text" placeholder="Ej. Juan" />
-
-      <label for="apellido">Apellido</label>
-      <input id="apellido" type="text" placeholder="Ej. Martínez" />
-
-      <label for="telefono">Teléfono</label>
-      <input id="telefono" type="tel" placeholder="Ej. 6641234567" />
-
-      <label for="fecha">Fecha</label>
-      <input id="fecha" type="date" />
-
-      <label for="hora-manual">Hora (Disponible de 17:00 a 22:00 — Ej. 17:36)</label>
-      <input id="hora-manual" type="time" min="17:00" max="22:00" />
-
-      <div id="aviso-choque" class="aviso-choque" style="display: none;">
-        <p id="texto-choque"></p>
-        <div class="acciones-choque">
-          <button id="btn-esperar-hora" type="button">Esperar aprox. 1 hora</button>
-          <button id="btn-mantener-hora" type="button">Agendar igual a mi hora (con espera)</button>
-        </div>
-      </div>
-
-      <button id="btn-confirmar" type="button">Confirmar cita ($99 MXN)</button>
-      <p id="mensaje-estado"></p>
-    </section>
-
-    <aside class="card card-lealtad">
-      <span class="tag-graffiti">VIP PASS</span>
-      <h2>Tarjeta de lealtad (5 sellos)</h2>
-      <p class="sub-lealtad">Junta 5 cortes y llévate el siguiente gratis.</p>
-      <p class="codigo-box">Código: <strong id="codigo-cliente">---</strong></p>
-      <p id="texto-sellos">0 / 5 sellos</p>
-      <div id="casillas-sellos"></div>
-      <div id="qr-contenedor"></div>
-      <button id="btn-limpiar-qr" type="button" class="btn-limpiar-qr">Limpiar QR y ticket</button>
-
-      <div id="voucher-cita" class="voucher" style="display: none;">
-        <div class="voucher-header">
-          <strong>TICKET DE CITA</strong>
-          <span id="voucher-folio">#---</span>
-        </div>
-        <div class="voucher-linea"><span>Cliente:</span><strong id="voucher-cliente">---</strong></div>
-        <div class="voucher-linea"><span>Teléfono:</span><strong id="voucher-telefono">---</strong></div>
-        <div class="voucher-linea"><span>Fecha:</span><strong id="voucher-fecha">---</strong></div>
-        <div class="voucher-linea"><span>Hora:</span><strong id="voucher-hora">---</strong></div>
-        <div class="voucher-linea"><span>Estado:</span><strong id="voucher-estado">Pendiente</strong></div>
-        <div class="voucher-linea"><span>Nota:</span><strong id="voucher-espera">Turno normal</strong></div>
-        <div class="voucher-total"><span>Total:</span><strong id="voucher-total">$99 MXN</strong></div>
-      </div>
-    </aside>
   </main>
 
-  <script type="module" src="../js/app.js"></script>
+  <script type="module">
+    import {
+      estaDentroDeHorario,
+      obtenerCitasPorFecha,
+      guardarCitaYCliente
+    } from "../js/db.js";
+
+    const form = document.getElementById("form-registro-pc");
+    const nombreEl = document.getElementById("pc-nombre");
+    const apellidoEl = document.getElementById("pc-apellido");
+    const telefonoEl = document.getElementById("pc-telefono");
+    const fechaEl = document.getElementById("pc-fecha");
+    const horaEl = document.getElementById("pc-hora");
+    const avisoHorario = document.getElementById("pc-aviso-horario");
+    const msgEl = document.getElementById("pc-msg");
+    const ticketEl = document.getElementById("pc-ticket");
+
+    function generarCodigo(nombre, apellido) {
+      const i1 = (nombre.trim()[0] || "c").toLowerCase();
+      const i2 = (apellido.trim()[0] || nombre.trim()[1] || "l").toLowerCase();
+      const prefijo = `${i1}${i2}`.replace(/[^a-z]/g, "") || "cl";
+      const num = Math.floor(10000 + Math.random() * 90000);
+      return `${prefijo}-${num}`;
+    }
+
+    function formatearFechaMX(fechaISO) {
+      if (!fechaISO || !fechaISO.includes("-")) return fechaISO;
+      const [y, m, d] = fechaISO.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    async function validarHorarioYEspera() {
+      const hora = horaEl.value;
+      const fecha = fechaEl.value;
+
+      if (!hora) {
+        avisoHorario.style.display = "none";
+        return { ok: false, conEspera: false };
+      }
+
+      if (!estaDentroDeHorario(hora)) {
+        avisoHorario.textContent =
+          "No estamos abiertos a esa hora. El horario es de 17:00 a 22:00.";
+        avisoHorario.style.display = "block";
+        return { ok: false, conEspera: false };
+      }
+
+      avisoHorario.style.display = "none";
+      if (!fecha) return { ok: true, conEspera: false };
+
+      const citasDia = await obtenerCitasPorFecha(fecha);
+      const hayCitaReal = citasDia.some((c) => c.hora === hora);
+      return { ok: true, conEspera: hayCitaReal };
+    }
+
+    horaEl.addEventListener("change", validarHorarioYEspera);
+    fechaEl.addEventListener("change", validarHorarioYEspera);
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = nombreEl.value.trim();
+      const apellido = apellidoEl.value.trim();
+      const telefono = telefonoEl.value.trim();
+      const fecha = fechaEl.value;
+      const hora = horaEl.value;
+
+      const check = await validarHorarioYEspera();
+      if (!check.ok) {
+        msgEl.className = "msg err";
+        msgEl.textContent = "Elige una hora entre 17:00 y 22:00.";
+        return;
+      }
+
+      if (!nombre || !telefono || !fecha || !hora) {
+        msgEl.className = "msg err";
+        msgEl.textContent = "Completa los campos requeridos.";
+        return;
+      }
+
+      const codigo = generarCodigo(nombre, apellido);
+      const fechaMX = formatearFechaMX(fecha);
+      const citaObj = {
+        id: `cita-${Date.now()}`,
+        codigo,
+        nombre,
+        apellido,
+        telefono,
+        fecha,
+        fechaMX,
+        hora,
+        precio: 99,
+        moneda: "MXN",
+        estado: "Pendiente",
+        conEspera: check.conEspera,
+        nota: check.conEspera ? "Con espera" : "Turno normal"
+      };
+
+      msgEl.className = "msg";
+      msgEl.textContent = "Guardando cita...";
+
+      try {
+        await guardarCitaYCliente(citaObj);
+        ticketEl.innerHTML = `
+          <div><strong>Código:</strong> ${codigo}</div>
+          <div><strong>Cliente:</strong> ${nombre} ${apellido}</div>
+          <div><strong>Teléfono:</strong> ${telefono}</div>
+          <div><strong>Fecha y hora:</strong> ${fechaMX} • ${hora}</div>
+          <div><strong>Estado:</strong> ${citaObj.estado} • ${citaObj.nota} • $99 MXN</div>
+        `;
+        msgEl.className = "msg ok";
+        msgEl.textContent = `Cita registrada. Tu código de cliente es ${codigo}.`;
+      } catch (err) {
+        msgEl.className = "msg err";
+        msgEl.textContent = `Error al guardar: ${err.message || err}`;
+      }
+    });
+  </script>
 </body>
 </html>

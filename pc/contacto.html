@@ -1,45 +1,238 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contacto — El Barbero</title>
+  <link rel="icon" href="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --panel: #121216;
+      --row: #18181f;
+      --line: rgba(245, 197, 24, 0.24);
+      --line-hover: rgba(245, 197, 24, 0.72);
+      --gold: #f5c518;
+      --gold-bg: rgba(245, 197, 24, 0.12);
+      --ink: #f4f4f6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Inter", sans-serif;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #09090b;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-family: "Cinzel", serif;
+      font-weight: 800;
+      font-size: 1.02rem;
+      color: var(--gold);
+    }
+
+    .brand-img {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--line-hover);
+      background: #fff;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: var(--ink);
+      background: var(--row);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 6px 12px;
+      font-size: 0.86rem;
+    }
+
+    .menu a:hover {
+      color: var(--gold);
+      border-color: var(--line-hover);
+    }
+
+    .menu a.destacado {
+      background: var(--gold);
+      color: #111111;
+      border-color: var(--gold);
+      font-weight: 700;
+    }
+
+    .precio-pill {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      background: var(--gold-bg);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+    }
+
+    .page-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 36px 18px 60px;
+    }
+
+    .box-contacto {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 26px 24px;
+    }
+
+    .eyebrow {
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-family: "Cinzel", serif;
+      font-size: 1.7rem;
+      color: var(--gold);
+    }
+
+    .lista-info {
+      display: grid;
+      gap: 10px;
+    }
+
+    .fila-info {
+      background: var(--row);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 11px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+    }
+
+    .fila-info strong {
+      color: #ffffff;
+    }
+
+    .acciones-extra {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-oro {
+      text-decoration: none;
+      background: var(--gold);
+      color: #111111;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--gold);
+    }
+
+    .btn-borde {
+      text-decoration: none;
+      background: var(--row);
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+
+    .btn-borde:hover {
+      border-color: var(--line-hover);
+    }
+  </style>
 </head>
 <body>
-  <div class="graffiti-overlay"></div>
+  <header class="topbar">
+    <div class="topbar-wrap">
+      <a class="brand-link" href="../principal1.html">
+        <img class="brand-img" src="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" alt="Logo El Barbero" />
+        <span>EL BARBERO</span>
+      </a>
 
-  <header>
-    <div class="marca">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQhkZ4fiYPASrH7R5TQPnJFq9RLlEqQnv2SteIL1uojozAX8ro0JY3p7c&s=10" alt="Logo El Barbero" class="logo-mini" />
-      <div>
-        <strong>EL BARBERO</strong>
-        <small>RESPETO Y HONOR • BARBER SHOP</small>
-      </div>
+      <nav class="menu">
+        <a href="../principal1.html">Página principal</a>
+        <a href="./index.html" class="destacado">Agendar cita</a>
+        <a href="../agendar-codigo.html">Con código</a>
+        <a href="./contacto.html">Contacto</a>
+      </nav>
+
+      <span class="precio-pill">Corte general: $99 MXN</span>
     </div>
-
-    <nav class="nav-botones">
-      <a href="./index.html" class="nav-btn">Página principal</a>
-      <a href="./index.html#agendar" class="nav-btn nav-btn-oro">Agendar cita</a>
-      <a href="./contacto.html" class="nav-btn">Contacto</a>
-    </nav>
-
-    <span class="badge-precio">Corte general: $99 MXN</span>
   </header>
 
-  <main style="grid-template-columns: 1fr; max-width: 720px;">
-    <section class="card">
-      <span class="tag-graffiti">ATENCIÓN DIRECTA</span>
-      <h1>Contacto</h1>
-      <p><strong>Horario:</strong> Lunes a domingo, 17:00 a 22:00</p>
-      <p><strong>Teléfono / WhatsApp:</strong> 664 123 4567</p>
-      <p><strong>Precio de corte general:</strong> $99 MXN</p>
-      <p><strong>Tarjeta de lealtad:</strong> 5 sellos y el siguiente corte es gratis.</p>
-      <div style="margin-top: 10px;">
-        <a href="./index.html#agendar" class="btn-hero">Ir a agendar cita</a>
+  <main class="page-wrap">
+    <section class="box-contacto">
+      <div class="eyebrow">Atención directa</div>
+      <h1>CONTACTO</h1>
+
+      <div class="lista-info">
+        <div class="fila-info">
+          <strong>Horario:</strong> Lunes a domingo, 17:00 a 22:00
+        </div>
+        <div class="fila-info">
+          <strong>Teléfono / WhatsApp:</strong> 664 123 4567
+        </div>
+        <div class="fila-info">
+          <strong>Precio de corte general:</strong> $99 MXN
+        </div>
+        <div class="fila-info">
+          <strong>Tarjeta de lealtad:</strong> 5 sellos y el siguiente corte es gratis.
+        </div>
+      </div>
+
+      <div class="acciones-extra">
+        <a class="btn-oro" href="./index.html">Agendar nuevo cliente</a>
+        <a class="btn-borde" href="../agendar-codigo.html">Entrar con código</a>
+        <a class="btn-borde" href="../principal1.html">Volver al inicio</a>
       </div>
     </section>
   </main>

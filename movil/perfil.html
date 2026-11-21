@@ -22,8 +22,9 @@
     </div>
 
     <nav class="nav-botones">
+      <a id="btn-volver-admin" href="../admin/index.html" class="nav-btn nav-btn-oro" style="display: none;">⬅️ Regresar al Panel Admin</a>
       <a href="./index.html" class="nav-btn">Página principal</a>
-      <a href="./index.html#agendar" class="nav-btn nav-btn-oro">Agendar cita</a>
+      <a href="./index.html#agendar" class="nav-btn">Agendar cita</a>
       <a href="./contacto.html" class="nav-btn">Contacto</a>
     </nav>
 
@@ -48,11 +49,16 @@
   </main>
 
   <script type="module">
-    const STORAGE_CITAS = "barber_citas_locales";
-    const STORAGE_CLIENTES = "barber_clientes_locales";
+    import { buscarClientePorCodigo, obtenerTodasLasCitas } from "../js/db.js";
 
     const params = new URLSearchParams(window.location.search);
     const codigoParam = (params.get("codigo") || localStorage.getItem("barber_codigo") || "").trim().toLowerCase();
+    const vieneDeAdmin = params.get("from") === "admin";
+
+    const btnVolverAdmin = document.getElementById("btn-volver-admin");
+    if (vieneDeAdmin && btnVolverAdmin) {
+      btnVolverAdmin.style.display = "inline-block";
+    }
 
     const nombreEl = document.getElementById("perfil-nombre");
     const codigoEl = document.getElementById("perfil-codigo");
@@ -61,14 +67,6 @@
     const textoSellosEl = document.getElementById("perfil-texto-sellos");
     const sellosBox = document.getElementById("perfil-sellos");
     const fichasBox = document.getElementById("perfil-fichas");
-
-    function leer(clave) {
-      try {
-        return JSON.parse(localStorage.getItem(clave) || "[]");
-      } catch (_) {
-        return [];
-      }
-    }
 
     function pintarSellosPerfil(sellos = 0) {
       sellosBox.innerHTML = "";
@@ -85,40 +83,59 @@
       textoSellosEl.textContent = `${total} / 5 sellos`;
     }
 
-    const clientes = leer(STORAGE_CLIENTES);
-    const citas = leer(STORAGE_CITAS).filter((c) => (c.codigo || "").toLowerCase() === codigoParam);
-    const cliente = clientes.find((c) => (c.codigo || "").toLowerCase() === codigoParam) || citas[0] || null;
+    async function cargarPerfil() {
+      if (!codigoParam) {
+        nombreEl.textContent = "Perfil no encontrado";
+        pintarSellosPerfil(0);
+        fichasBox.innerHTML = "<p style='color:var(--suave);'>No se especificó ningún código.</p>";
+        return;
+      }
 
-    if (!cliente) {
-      nombreEl.textContent = "Perfil no encontrado";
-      codigoEl.textContent = codigoParam || "---";
-      pintarSellosPerfil(0);
-      fichasBox.innerHTML = "<p style='color:var(--suave);'>No hay fichas registradas para este código en este dispositivo.</p>";
-    } else {
-      nombreEl.textContent = `${cliente.nombre || ""} ${cliente.apellido || ""}`.trim() || "Cliente";
-      codigoEl.textContent = cliente.codigo;
-      telefonoEl.textContent = cliente.telefono || "---";
-      cortesEl.textContent = cliente.cortes || 0;
-      pintarSellosPerfil(cliente.sellos || 0);
+      try {
+        const [cliente, todasCitas] = await Promise.all([
+          buscarClientePorCodigo(codigoParam),
+          obtenerTodasLasCitas()
+        ]);
 
-      if (!citas.length) {
-        fichasBox.innerHTML = "<p style='color:var(--suave);'>Aún no tienes fichas agendadas.</p>";
-      } else {
-        fichasBox.innerHTML = citas
-          .slice()
-          .reverse()
-          .map(
-            (f) => `
-            <div class="ficha-item">
-              <div>
-                <strong>${f.fechaMX || f.fecha} — ${f.hora}</strong>
-                <small>Estado: ${f.estado || "Pendiente"} | ${f.conEspera ? "Con espera" : "Turno normal"} | $${f.precio || 99} MXN</small>
-              </div>
-            </div>`
-          )
-          .join("");
+        const citas = todasCitas.filter((c) => (c.codigo || "").toLowerCase() === codigoParam);
+        const info = cliente || citas[0] || null;
+
+        if (!info) {
+          nombreEl.textContent = "Perfil no encontrado";
+          codigoEl.textContent = codigoParam;
+          pintarSellosPerfil(0);
+          fichasBox.innerHTML = "<p style='color:var(--suave);'>No hay fichas registradas para este código.</p>";
+          return;
+        }
+
+        nombreEl.textContent = `${info.nombre || ""} ${info.apellido || ""}`.trim() || "Cliente";
+        codigoEl.textContent = info.codigo;
+        telefonoEl.textContent = info.telefono || "---";
+        cortesEl.textContent = info.cortes || 0;
+        pintarSellosPerfil(info.sellos || 0);
+
+        if (!citas.length) {
+          fichasBox.innerHTML = "<p style='color:var(--suave);'>Aún no tienes fichas agendadas.</p>";
+        } else {
+          fichasBox.innerHTML = citas
+            .map(
+              (f) => `
+              <div class="ficha-item">
+                <div>
+                  <strong>${f.fechaMX || f.fecha} — ${f.hora}</strong>
+                  <small>Estado: ${f.estado || "Pendiente"} | ${f.conEspera ? "Con espera" : "Turno normal"} | $${f.precio || 99} MXN</small>
+                </div>
+              </div>`
+            )
+            .join("");
+        }
+      } catch (e) {
+        nombreEl.textContent = "Error de conexión";
+        fichasBox.innerHTML = "<p style='color:var(--suave);'>Error al cargar el perfil.</p>";
       }
     }
+
+    cargarPerfil();
   </script>
 </body>
 </html>

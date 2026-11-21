@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendar con Código — El Barbero</title>
+  <link rel="icon" href="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --card: #121216;
+      --card-2: #18181f;
+      --border: rgba(245, 197, 24, 0.22);
+      --border-bright: rgba(245, 197, 24, 0.68);
+      --gold: #f5c518;
+      --gold-soft: rgba(245, 197, 24, 0.12);
+      --gold-hover: #ffd43b;
+      --text: #f4f4f6;
+      --muted: #a1a1aa;
+      --danger: #ef4444;
+      --ok: #22c55e;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(245, 197, 24, 0.15) 0%, transparent 45%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      padding: 12px 10px 34px;
+    }
+
+    .wrap {
+      max-width: 460px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(18, 18, 22, 0.92);
+      border: 1px solid var(--border);
+    }
+
+    .brand-mini {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: "Cinzel", serif;
+      font-weight: 800;
+      font-size: 0.84rem;
+      color: var(--gold);
+    }
+
+    .logo-header {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border-bright);
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: var(--gold-soft);
+      border: 1px solid var(--border);
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .btn-back:hover,
+    .btn-back:active {
+      transform: translateY(-1px);
+      border-color: var(--border-bright);
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      margin-bottom: 10px;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.42);
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-soft);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 5px;
+    }
+
+    h1, h2 {
+      font-family: "Cinzel", serif;
+      margin: 0 0 3px;
+      color: var(--gold);
+      letter-spacing: 0.4px;
+    }
+
+    h1 { font-size: 1.08rem; }
+    h2 { font-size: 0.9rem; }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin: 0 0 9px;
+      line-height: 1.32;
+    }
+
+    .row {
+      display: flex;
+      gap: 7px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.74rem;
+      color: #e4e4e7;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--card-2);
+      color: var(--text);
+      font-size: 0.84rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(245, 197, 24, 0.15);
+    }
+
+    button {
+      border: none;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: var(--gold);
+      color: #111111;
+      transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover:not(:disabled),
+    button:active:not(:disabled) {
+      background: var(--gold-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(245, 197, 24, 0.25);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-full {
+      width: 100%;
+      margin-top: 9px;
+      padding: 9px 12px;
+    }
+
+    .cliente-box {
+      display: none;
+      background: rgba(245, 197, 24, 0.08);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 8px;
+    }
+
+    .cliente-box.visible {
+      display: block;
+    }
+
+    .cliente-nombre {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cliente-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    .aviso-horario {
+      display: none;
+      margin-top: 7px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fecaca;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .estado-msg {
+      margin-top: 7px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.32;
+    }
+
+    .estado-msg.ok { color: #86efac; }
+    .estado-msg.err { color: #fca5a5; }
+
+    .ticket {
+      display: none;
+      margin-top: 9px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: #0d1015;
+      border: 1px dashed rgba(245, 197, 24, 0.55);
+    }
+
+    .ticket.visible {
+      display: block;
+    }
+
+    .ticket p {
+      margin: 3px 0;
+      font-size: 0.76rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand-mini">
+        <img class="logo-header" src="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" alt="Logo" />
+        <span>EL BARBERO</span>
+      </div>
+      <a class="btn-back" href="./principal1.html">← Inicio</a>
+    </div>
+
+    <div class="card">
+      <span class="pill">17:00–22:00 • $99 MXN</span>
+      <h1>ENTRAR CON CÓDIGO</h1>
+      <p class="sub">Usa tu código único para elegir solo fecha y hora.</p>
+
+      <label for="codigo-input">Código de cliente</label>
+      <div class="row">
+        <input id="codigo-input" type="text" placeholder="Ej. ms-23271" autocomplete="off" />
+        <button id="btn-entrar-codigo" type="button">Entrar</button>
+      </div>
+
+      <div id="msg-codigo" class="estado-msg">Escribe tu código y presiona Entrar.</div>
+
+      <div id="cliente-card" class="cliente-box">
+        <div id="cliente-nombre" class="cliente-nombre">—</div>
+        <div id="cliente-meta" class="cliente-meta">—</div>
+      </div>
+    </div>
+
+    <form id="form-rapido" class="card">
+      <h2>FECHA Y HORA</h2>
+      <p class="sub">Horario: <strong>17:00 a 22:00</strong>.</p>
+
+      <div class="grid-2">
+        <div>
+          <label for="fecha-input">Fecha</label>
+          <input id="fecha-input" type="date" required />
+        </div>
+        <div>
+          <label for="hora-input">Hora</label>
+          <input id="hora-input" type="time" required />
+        </div>
+      </div>
+
+      <div id="aviso-horario" class="aviso-horario"></div>
+
+      <button id="btn-confirmar" class="btn-full" type="submit" disabled>
+        Confirmar cita ($99 MXN)
+      </button>
+
+      <div id="msg-reserva" class="estado-msg">Valida tu código para habilitar el botón.</div>
+
+      <div id="ticket-box" class="ticket">
+        <h2 style="margin-bottom:4px;">TICKET DE CITA</h2>
+        <p id="t-codigo"></p>
+        <p id="t-cliente"></p>
+        <p id="t-tel"></p>
+        <p id="t-fecha-hora"></p>
+        <p id="t-estado"></p>
+      </div>
+    </form>
+  </div>
+
+  <script type="module">
+    import {
+      buscarClientePorCodigo,
+      estaDentroDeHorario,
+      obtenerCitasPorFecha,
+      guardarCitaYCliente
+    } from "./js/db.js";
+
+    const codigoInput = document.getElementById("codigo-input");
+    const btnEntrar = document.getElementById("btn-entrar-codigo");
+    const msgCodigo = document.getElementById("msg-codigo");
+    const clienteCard = document.getElementById("cliente-card");
+    const clienteNombre = document.getElementById("cliente-nombre");
+    const clienteMeta = document.getElementById("cliente-meta");
+
+    const formRapido = document.getElementById("form-rapido");
+    const fechaInput = document.getElementById("fecha-input");
+    const horaInput = document.getElementById("hora-input");
+    const avisoHorario = document.getElementById("aviso-horario");
+    const btnConfirmar = document.getElementById("btn-confirmar");
+    const msgReserva = document.getElementById("msg-reserva");
+
+    const ticketBox = document.getElementById("ticket-box");
+    const tCodigo = document.getElementById("t-codigo");
+    const tCliente = document.getElementById("t-cliente");
+    const tTel = document.getElementById("t-tel");
+    const tFechaHora = document.getElementById("t-fecha-hora");
+    const tEstado = document.getElementById("t-estado");
+
+    let clienteCargado = null;
+
+    function formatearFechaMX(fechaISO) {
+      if (!fechaISO || !fechaISO.includes("-")) return fechaISO || "";
+      const [y, m, d] = fechaISO.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function actualizarBotonSubmit() {
+      const horaValida = estaDentroDeHorario(horaInput.value);
+      const fechaValida = Boolean(fechaInput.value);
+      btnConfirmar.disabled = !(clienteCargado && fechaValida && horaValida);
+    }
+
+    async function revisarHorarioYDisponibilidad() {
+      const hora = horaInput.value;
+      const fecha = fechaInput.value;
+
+      if (!hora) {
+        avisoHorario.style.display = "none";
+        avisoHorario.textContent = "";
+        actualizarBotonSubmit();
+        return { ok: false, conEspera: false };
+      }
+
+      if (!estaDentroDeHorario(hora)) {
+        avisoHorario.textContent =
+          "No estamos abiertos a esa hora. El horario es de 17:00 a 22:00.";
+        avisoHorario.style.display = "block";
+        msgReserva.className = "estado-msg err";
+        msgReserva.textContent = "Elige una hora entre 17:00 y 22:00.";
+        actualizarBotonSubmit();
+        return { ok: false, conEspera: false };
+      }
+
+      avisoHorario.style.display = "none";
+      avisoHorario.textContent = "";
+      actualizarBotonSubmit();
+
+      if (!fecha) {
+        msgReserva.className = "estado-msg";
+        msgReserva.textContent = `Hora ${hora} válida (17:00–22:00). Elige la fecha.`;
+        return { ok: true, conEspera: false };
+      }
+
+      try {
+        const citasDelDia = await obtenerCitasPorFecha(fecha);
+        const hayCitaReal = citasDelDia.some((c) => c.hora === hora);
+        msgReserva.className = "estado-msg ok";
+        msgReserva.textContent = hayCitaReal
+          ? `Horario válido (${hora}). Ya hay cita: se agendará con espera.`
+          : `Horario disponible (${hora}).`;
+        return { ok: true, conEspera: hayCitaReal };
+      } catch (err) {
+        msgReserva.className = "estado-msg err";
+        msgReserva.textContent = `Error al verificar: ${err.message || err}`;
+        return { ok: true, conEspera: false };
+      }
+    }
+
+    async function cargarCodigo(codigoRaw) {
+      const codigo = (codigoRaw || "").trim().toLowerCase();
+      if (!codigo) {
+        msgCodigo.className = "estado-msg err";
+        msgCodigo.textContent = "Escribe tu código (ej. ms-23271).";
+        return;
+      }
+
+      btnEntrar.disabled = true;
+      msgCodigo.className = "estado-msg";
+      msgCodigo.textContent = `Buscando "${codigo}"...`;
+
+      try {
+        const cliente = await buscarClientePorCodigo(codigo);
+        if (!cliente) {
+          clienteCargado = null;
+          clienteCard.classList.remove("visible");
+          actualizarBotonSubmit();
+          msgCodigo.className = "estado-msg err";
+          msgCodigo.textContent = `No existe el código "${codigo}".`;
+          return;
+        }
+
+        clienteCargado = {
+          ...cliente,
+          codigo: (cliente.codigo || codigo).toLowerCase()
+        };
+
+        clienteNombre.textContent = `${clienteCargado.nombre || ""} ${clienteCargado.apellido || ""}`.trim() || "Cliente";
+        clienteMeta.textContent = `Código: ${clienteCargado.codigo} • Tel: ${clienteCargado.telefono || "—"} • Sellos: ${clienteCargado.sellos || 0}/5`;
+        clienteCard.classList.add("visible");
+
+        msgCodigo.className = "estado-msg ok";
+        msgCodigo.textContent = `Código ${clienteCargado.codigo} listo. Elige fecha y hora.`;
+        actualizarBotonSubmit();
+      } catch (err) {
+        clienteCargado = null;
+        clienteCard.classList.remove("visible");
+        actualizarBotonSubmit();
+        msgCodigo.className = "estado-msg err";
+        msgCodigo.textContent = `Error: ${err.message || err}`;
+      } finally {
+        btnEntrar.disabled = false;
+      }
+    }
+
+    btnEntrar.addEventListener("click", () => cargarCodigo(codigoInput.value));
+    codigoInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        cargarCodigo(codigoInput.value);
+      }
+    });
+
+    fechaInput.addEventListener("change", revisarHorarioYDisponibilidad);
+    horaInput.addEventListener("change", revisarHorarioYDisponibilidad);
+
+    formRapido.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!clienteCargado) {
+        msgReserva.className = "estado-msg err";
+        msgReserva.textContent = "Primero valida tu código.";
+        return;
+      }
+
+      const fecha = fechaInput.value;
+      const hora = horaInput.value;
+      const check = await revisarHorarioYDisponibilidad();
+      if (!check.ok || !fecha || !hora) return;
+
+      btnConfirmar.disabled = true;
+      msgReserva.className = "estado-msg";
+      msgReserva.textContent = "Guardando cita...";
+
+      const fechaMX = formatearFechaMX(fecha);
+      const citaObj = {
+        id: `cita-${Date.now()}`,
+        codigo: clienteCargado.codigo,
+        nombre: clienteCargado.nombre || "",
+        apellido: clienteCargado.apellido || "",
+        telefono: clienteCargado.telefono || "",
+        fecha,
+        fechaMX,
+        hora,
+        precio: 99,
+        moneda: "MXN",
+        estado: "Pendiente",
+        conEspera: check.conEspera,
+        nota: check.conEspera ? "Con espera" : "Turno normal"
+      };
+
+      try {
+        await guardarCitaYCliente(citaObj);
+        msgReserva.className = "estado-msg ok";
+        msgReserva.textContent = `Cita confirmada para ${citaObj.nombre} (${citaObj.codigo}).`;
+
+        tCodigo.textContent = `Código: ${citaObj.codigo}`;
+        tCliente.textContent = `Cliente: ${citaObj.nombre} ${citaObj.apellido}`.trim();
+        tTel.textContent = `Tel: ${citaObj.telefono || "—"}`;
+        tFechaHora.textContent = `Fecha y hora: ${fechaMX} • ${hora}`;
+        tEstado.textContent = `${citaObj.estado} • ${citaObj.nota} • $99 MXN`;
+        ticketBox.classList.add("visible");
+      } catch (err) {
+        msgReserva.className = "estado-msg err";
+        msgReserva.textContent = `Error al guardar: ${err.message || err}`;
+      } finally {
+        actualizarBotonSubmit();
+      }
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const codigoUrl = params.get("codigo");
+    if (codigoUrl) {
+      codigoInput.value = codigoUrl;
+      cargarCodigo(codigoUrl);
+    }
+  </script>
+</body>
+</html>
