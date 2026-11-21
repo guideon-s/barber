@@ -14,10 +14,11 @@
       --panel: #121216;
       --row: #18181f;
       --line: rgba(245, 197, 24, 0.24);
-      --line-hover: rgba(245, 197, 24, 0.72);
+      --line-hover: rgba(245, 197, 24, 0.75);
       --gold: #f5c518;
       --gold-bg: rgba(245, 197, 24, 0.12);
       --ink: #f4f4f6;
+      --muted: #a1a1aa;
     }
 
     * { box-sizing: border-box; }
@@ -25,7 +26,9 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top, rgba(245, 197, 24, 0.12) 0%, transparent 45%),
+        var(--bg);
       color: var(--ink);
       font-family: "Inter", sans-serif;
     }
@@ -34,7 +37,8 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      background: #09090b;
+      background: rgba(9, 9, 11, 0.94);
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--line);
     }
 
@@ -84,6 +88,7 @@
       border-radius: 9px;
       padding: 6px 12px;
       font-size: 0.86rem;
+      transition: border-color 0.2s ease, color 0.2s ease;
     }
 
     .menu a:hover {
@@ -109,53 +114,144 @@
     }
 
     .page-wrap {
-      max-width: 680px;
+      max-width: 780px;
       margin: 0 auto;
-      padding: 36px 18px 60px;
+      padding: 36px 18px 64px;
     }
 
     .box-contacto {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 26px 24px;
+      border-radius: 20px;
+      padding: 28px 26px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     }
 
     .eyebrow {
       font-size: 0.74rem;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
       color: var(--gold);
       margin-bottom: 6px;
     }
 
     h1 {
-      margin: 0 0 16px;
+      margin: 0 0 8px;
       font-family: "Cinzel", serif;
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       color: var(--gold);
+    }
+
+    .subtitulo {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .canales-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .canal-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-decoration: none;
+      background: var(--row);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--ink);
+      transition: transform 0.18s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .canal-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--line-hover);
+      background: #1f1f28;
+    }
+
+    .canal-izq {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icono-red {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .icono-ig {
+      background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
+      color: #ffffff;
+    }
+
+    .icono-wa {
+      background: rgba(37, 211, 102, 0.16);
+      border: 1px solid rgba(37, 211, 102, 0.45);
+      color: #25d366;
+    }
+
+    .canal-titulo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #ffffff;
+    }
+
+    .canal-dato {
+      font-size: 0.82rem;
+      color: var(--gold);
+      margin-top: 2px;
+    }
+
+    .flecha-ir {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gold);
+      white-space: nowrap;
     }
 
     .lista-info {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
 
     .fila-info {
       background: var(--row);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 11px;
+      border-radius: 12px;
       padding: 12px 14px;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+
+    .fila-info span {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      margin-bottom: 3px;
     }
 
     .fila-info strong {
       color: #ffffff;
+      font-weight: 600;
     }
 
     .acciones-extra {
-      margin-top: 18px;
+      margin-top: 20px;
       padding-top: 16px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
@@ -188,6 +284,13 @@
     .btn-borde:hover {
       border-color: var(--line-hover);
     }
+
+    @media (max-width: 640px) {
+      .canales-grid,
+      .lista-info {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -211,21 +314,60 @@
 
   <main class="page-wrap">
     <section class="box-contacto">
-      <div class="eyebrow">Atención directa</div>
+      <div class="eyebrow">Barber Bloud • Tijuana</div>
       <h1>CONTACTO</h1>
+      <p class="subtitulo">Escríbenos por WhatsApp o síguenos en Instagram para apartar tu lugar o resolver dudas.</p>
+
+      <div class="canales-grid">
+        <a class="canal-card" href="https://www.instagram.com/barberr.blond/" target="_blank" rel="noopener noreferrer">
+          <div class="canal-izq">
+            <div class="icono-red icono-ig" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="canal-titulo">Instagram oficial</div>
+              <div class="canal-dato">@barberr.blond</div>
+            </div>
+          </div>
+          <span class="flecha-ir">Abrir ↗</span>
+        </a>
+
+        <a class="canal-card" href="https://wa.me/526634579244?text=Hola%2C%20quiero%20agendar%20una%20cita%20en%20El%20Barbero." target="_blank" rel="noopener noreferrer">
+          <div class="canal-izq">
+            <div class="icono-red icono-wa" aria-hidden="true">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="canal-titulo">WhatsApp oficial</div>
+              <div class="canal-dato">+52 663 457 9244</div>
+            </div>
+          </div>
+          <span class="flecha-ir">Chatear ↗</span>
+        </a>
+      </div>
 
       <div class="lista-info">
         <div class="fila-info">
-          <strong>Horario:</strong> Lunes a domingo, 17:00 a 22:00
+          <span>Horario de atención</span>
+          <strong>Lunes a domingo, 17:00 a 22:00</strong>
         </div>
         <div class="fila-info">
-          <strong>Teléfono / WhatsApp:</strong> 664 123 4567
+          <span>Ubicación</span>
+          <strong>Tijuana, B.C. • DM "Quiero" para cita</strong>
         </div>
         <div class="fila-info">
-          <strong>Precio de corte general:</strong> $99 MXN
+          <span>Tarifa base</span>
+          <strong>Corte general: $99 MXN</strong>
         </div>
         <div class="fila-info">
-          <strong>Tarjeta de lealtad:</strong> 5 sellos y el siguiente corte es gratis.
+          <span>Tarjeta de lealtad</span>
+          <strong>5 sellos y el siguiente corte es gratis</strong>
         </div>
       </div>
 

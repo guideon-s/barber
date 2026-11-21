@@ -14,10 +14,11 @@
       --panel: #121216;
       --row: #18181f;
       --line: rgba(245, 197, 24, 0.24);
-      --line-hover: rgba(245, 197, 24, 0.72);
+      --line-hover: rgba(245, 197, 24, 0.75);
       --gold: #f5c518;
       --gold-bg: rgba(245, 197, 24, 0.12);
       --ink: #f4f4f6;
+      --muted: #a1a1aa;
     }
 
     * {
@@ -28,7 +29,9 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top, rgba(245, 197, 24, 0.12) 0%, transparent 45%),
+        var(--bg);
       color: var(--ink);
       font-family: "Inter", sans-serif;
     }
@@ -37,7 +40,8 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      background: #09090b;
+      background: rgba(9, 9, 11, 0.95);
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--line);
     }
 
@@ -105,14 +109,15 @@
     .page-wrap {
       max-width: 460px;
       margin: 0 auto;
-      padding: 14px 10px 38px;
+      padding: 14px 10px 42px;
     }
 
     .box-contacto {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 15px;
-      padding: 15px 14px;
+      border-radius: 16px;
+      padding: 16px 14px;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
     }
 
     .pill {
@@ -130,106 +135,84 @@
     }
 
     h1 {
-      margin: 0 0 10px;
+      margin: 0 0 4px;
       font-family: "Cinzel", serif;
-      font-size: 1.18rem;
+      font-size: 1.24rem;
       color: var(--gold);
     }
 
-    .lista-info {
-      display: grid;
-      gap: 8px;
-    }
-
-    .fila-info {
-      background: var(--row);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 9px 11px;
-      font-size: 0.8rem;
+    .subtitulo {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
       line-height: 1.35;
     }
 
-    .fila-info strong {
+    .canales-grid {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .canal-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-decoration: none;
+      background: var(--row);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 11px;
+      color: var(--ink);
+    }
+
+    .canal-card:active {
+      border-color: var(--line-hover);
+      background: #1f1f28;
+    }
+
+    .canal-izq {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icono-red {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .icono-ig {
+      background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
       color: #ffffff;
     }
 
-    .acciones-extra {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      display: grid;
-      gap: 7px;
+    .icono-wa {
+      background: rgba(37, 211, 102, 0.16);
+      border: 1px solid rgba(37, 211, 102, 0.45);
+      color: #25d366;
     }
 
-    .btn-oro {
-      text-align: center;
-      text-decoration: none;
-      background: var(--gold);
-      color: #111111;
+    .canal-titulo {
       font-weight: 700;
-      font-size: 0.8rem;
-      padding: 8px 10px;
-      border-radius: 9px;
-      border: 1px solid var(--gold);
+      font-size: 0.82rem;
+      color: #ffffff;
     }
 
-    .btn-borde {
-      text-align: center;
-      text-decoration: none;
-      background: var(--row);
+    .canal-dato {
+      font-size: 0.74rem;
       color: var(--gold);
-      font-weight: 600;
-      font-size: 0.8rem;
-      padding: 8px 10px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
+      margin-top: 1px;
     }
-  </style>
-</head>
-<body>
-  <header class="topbar">
-    <div class="topbar-wrap">
-      <a class="brand-link" href="../principal1.html">
-        <img class="brand-img" src="https://media.istockphoto.com/id/2163724259/es/vector/ilustraci%C3%B3n-vintage-del-logotipo-del-poste-de-la-peluquer%C3%ADa.jpg?s=612x612&w=0&k=20&c=P93WbPTS9UyM9l3THb6H_Eb0F_K4TcYgMHKBf7_vZ1s=" alt="Logo El Barbero" />
-        <span>EL BARBERO</span>
-      </a>
 
-      <nav class="menu">
-        <a href="../principal1.html">Página principal</a>
-        <a href="./index.html" class="destacado">Agendar</a>
-        <a href="../agendar-codigo.html">Con código</a>
-        <a href="./contacto.html">Contacto</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="page-wrap">
-    <section class="box-contacto">
-      <span class="pill">17:00–22:00 • $99 MXN</span>
-      <h1>CONTACTO</h1>
-
-      <div class="lista-info">
-        <div class="fila-info">
-          <strong>Horario:</strong> Lunes a domingo, 17:00 a 22:00
-        </div>
-        <div class="fila-info">
-          <strong>Teléfono / WhatsApp:</strong> 664 123 4567
-        </div>
-        <div class="fila-info">
-          <strong>Precio de corte general:</strong> $99 MXN
-        </div>
-        <div class="fila-info">
-          <strong>Tarjeta de lealtad:</strong> 5 sellos y el siguiente corte es gratis.
-        </div>
-      </div>
-
-      <div class="acciones-extra">
-        <a class="btn-oro" href="./index.html">Agendar nuevo cliente</a>
-        <a class="btn-borde" href="../agendar-codigo.html">Entrar con código</a>
-        <a class="btn-borde" href="../principal1.html">Volver al inicio</a>
-      </div>
-    </section>
-  </main>
-</body>
-</html>
+    .flecha-ir {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--gold);
+      white-space: nowrap;
+    }

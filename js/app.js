@@ -31,12 +31,11 @@ const textoChoque = document.getElementById("texto-choque");
 const btnEsperarHora = document.getElementById("btn-esperar-hora");
 const btnMantenerHora = document.getElementById("btn-mantener-hora");
 const btnConfirmar = document.getElementById("btn-confirmar");
-const btnLimpiarQR = document.getElementById("btn-limpiar-qr");
+const btnLimpiarTicket = document.getElementById("btn-limpiar-qr") || document.getElementById("btn-limpiar-ticket");
 const mensajeEstado = document.getElementById("mensaje-estado");
 const codigoClienteEl = document.getElementById("codigo-cliente");
 const textoSellosEl = document.getElementById("texto-sellos");
 const casillasSellosEl = document.getElementById("casillas-sellos");
-const qrContenedor = document.getElementById("qr-contenedor");
 
 const voucherEl = document.getElementById("voucher-cita");
 const voucherFolioEl = document.getElementById("voucher-folio");
@@ -133,14 +132,13 @@ function limpiarFormulario() {
   if (inputHora) inputHora.value = "";
 }
 
-function limpiarQRYTicket() {
+function limpiarTicket() {
   localStorage.removeItem("barber_codigo");
   localStorage.removeItem("barber_ultimo_ticket");
   if (codigoClienteEl) codigoClienteEl.textContent = "---";
   pintarSellos(0);
-  if (qrContenedor) qrContenedor.innerHTML = "";
   if (voucherEl) voucherEl.style.display = "none";
-  setEstado("QR y ticket limpiados. Listo para otro cliente.");
+  setEstado("Ticket y código limpiados. Listo para otro cliente.");
 }
 
 function aMinutos(hhmm) {
@@ -177,27 +175,6 @@ function pintarSellos(sellos = 0) {
   }
   if (textoSellosEl) {
     textoSellosEl.textContent = `${total} / ${meta} sellos`;
-  }
-}
-
-function construirUrlPerfil(codigo) {
-  const baseRuta = window.location.pathname.includes("/movil/")
-    ? "/movil/perfil.html"
-    : "/pc/perfil.html";
-  return `${window.location.origin}${baseRuta}?codigo=${encodeURIComponent(codigo)}`;
-}
-
-function mostrarQR(codigo) {
-  if (!qrContenedor) return;
-  qrContenedor.innerHTML = "";
-  if (window.QRCode && codigo) {
-    new window.QRCode(qrContenedor, {
-      text: construirUrlPerfil(codigo),
-      width: 140,
-      height: 140,
-      colorDark: "#0b0d10",
-      colorLight: "#ffffff"
-    });
   }
 }
 
@@ -365,7 +342,6 @@ async function confirmarCita() {
 
     if (codigoClienteEl) codigoClienteEl.textContent = clienteResult.codigo;
     pintarSellos(clienteResult.sellos || 0);
-    mostrarQR(clienteResult.codigo);
     renderizarVoucher(datosTicket);
 
     limpiarFormulario();
@@ -420,8 +396,8 @@ async function inicializar() {
     });
   }
 
-  if (btnLimpiarQR) {
-    btnLimpiarQR.addEventListener("click", limpiarQRYTicket);
+  if (btnLimpiarTicket) {
+    btnLimpiarTicket.addEventListener("click", limpiarTicket);
   }
 
   await refrescarCitasDia();
@@ -437,7 +413,6 @@ async function inicializar() {
   const codigoGuardado = localStorage.getItem("barber_codigo");
   if (codigoGuardado) {
     if (codigoClienteEl) codigoClienteEl.textContent = codigoGuardado;
-    mostrarQR(codigoGuardado);
 
     const localCli = leerLocal(STORAGE_CLIENTES, []).find((c) => c.codigo === codigoGuardado);
     if (localCli) {
@@ -449,14 +424,12 @@ async function inicializar() {
         if (cliente) {
           if (codigoClienteEl) codigoClienteEl.textContent = cliente.codigo;
           pintarSellos(cliente.sellos || 0);
-          mostrarQR(cliente.codigo);
         }
       } catch (_) {}
     }
   }
 
   if (btnConfirmar) {
-    btnConfirmar.onclick = confirmarCita;
     btnConfirmar.addEventListener("click", confirmarCita);
   }
 }

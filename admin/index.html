@@ -6,9 +6,211 @@
   <title>El Barbero — Panel Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./admin.css" />
-  <script src="https://unpkg.com/html5-qrcode" defer></script>
+  <style>
+    :root {
+      --bg: #09090b;
+      --panel: #121216;
+      --row: #18181f;
+      --line: rgba(245, 197, 24, 0.24);
+      --line-hover: rgba(245, 197, 24, 0.78);
+      --gold: #f5c518;
+      --gold-soft: #ffdf70;
+      --gold-bg: rgba(245, 197, 24, 0.12);
+      --ink: #f4f4f6;
+      --muted: #a1a1aa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(245, 197, 24, 0.12) 0%, transparent 45%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Inter", sans-serif;
+    }
+
+    .admin-graffiti-bg {
+      display: none;
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 16px 64px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .admin-header,
+    main > section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.42);
+    }
+
+    .admin-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .admin-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--line-hover);
+      background: #18181f;
+    }
+
+    .admin-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-bg);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      font-size: 1.55rem;
+      color: var(--gold);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-family: "Cinzel", serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 340px;
+      background: var(--row);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--line-hover);
+    }
+
+    button {
+      background: var(--row);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 13px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    button:hover {
+      border-color: var(--line-hover);
+      transform: translateY(-1px);
+    }
+
+    button#btn-buscar,
+    button#btn-recargar {
+      background: var(--gold);
+      color: #111111;
+      border-color: var(--gold);
+      font-weight: 700;
+    }
+
+    button#btn-borrar-cliente {
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    #estado-admin {
+      margin: 12px 0 0;
+      font-size: 0.86rem;
+      color: var(--gold-soft);
+    }
+
+    .ficha-datos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .dato-box {
+      background: var(--row);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.86rem;
+    }
+
+    .dato-box span {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .acciones-grupo {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .item-cita {
+      background: var(--row);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .item-cita small {
+      display: block;
+      color: var(--muted);
+      margin: 6px 0 10px;
+      line-height: 1.4;
+    }
+
+    .archivo-oculto {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <div class="admin-graffiti-bg"></div>
@@ -28,26 +230,31 @@
 
     <section>
       <label for="codigo-buscar">Código del cliente</label>
-      <input id="codigo-buscar" type="text" placeholder="Ej. jm-91936" />
-      <button id="btn-buscar" type="button">Buscar</button>
-      <button id="btn-escanear" type="button">Escanear QR</button>
-      <button id="btn-detener" type="button">Detener cámara</button>
-      <div id="lector-qr"></div>
+      <input id="codigo-buscar" type="text" placeholder="Ej. jm-42848" />
+      <div class="acciones-grupo">
+        <button id="btn-buscar" type="button">Buscar</button>
+        <input id="input-recuperar-datos" class="archivo-oculto" type="file" accept=".json,application/json" />
+        <button id="btn-recuperar-datos" type="button">Recuperar datos</button>
+      </div>
       <p id="estado-admin">Conectando con Firestore...</p>
     </section>
 
     <section id="ficha-cliente" style="display: none;">
       <h2 id="cli-nombre">---</h2>
-      <p>Código: <strong id="cli-codigo">---</strong></p>
-      <p>Teléfono: <strong id="cli-telefono">---</strong></p>
-      <p>Estado última cita: <strong id="cli-estado-cita">Pendiente</strong></p>
-      <p>Sellos: <strong id="cli-sellos">0</strong> / 5 | Cortes: <strong id="cli-cortes">0</strong></p>
-      <button id="btn-sumar-sello" type="button">+1 Sello</button>
-      <button id="btn-sumar-corte" type="button">+1 Corte</button>
-      <button id="btn-canjear" type="button">Canjear corte gratis (5 sellos)</button>
-      <button id="btn-abrir-perfil" type="button">Ver perfil</button>
-      <button id="btn-cerrar-ficha" type="button">Cerrar ficha</button>
-      <button id="btn-borrar-cliente" type="button">🗑️ Borrar cliente</button>
+      <div class="ficha-datos">
+        <div class="dato-box"><span>Código</span><strong id="cli-codigo">---</strong></div>
+        <div class="dato-box"><span>Teléfono</span><strong id="cli-telefono">---</strong></div>
+        <div class="dato-box"><span>Estado última cita</span><strong id="cli-estado-cita">Pendiente</strong></div>
+        <div class="dato-box"><span>Sellos / Cortes</span><strong><span id="cli-sellos">0</span> / 5 | Cortes: <span id="cli-cortes">0</span></strong></div>
+      </div>
+      <div class="acciones-grupo">
+        <button id="btn-sumar-sello" type="button">+1 Sello</button>
+        <button id="btn-sumar-corte" type="button">+1 Corte</button>
+        <button id="btn-canjear" type="button">Canjear corte gratis (5 sellos)</button>
+        <button id="btn-abrir-perfil" type="button">Ver perfil</button>
+        <button id="btn-cerrar-ficha" type="button">Cerrar ficha</button>
+        <button id="btn-borrar-cliente" type="button">🗑️ Borrar cliente</button>
+      </div>
     </section>
 
     <section>
@@ -71,8 +278,8 @@
 
     const inputBuscar = document.getElementById("codigo-buscar");
     const btnBuscar = document.getElementById("btn-buscar");
-    const btnEscanear = document.getElementById("btn-escanear");
-    const btnDetener = document.getElementById("btn-detener");
+    const btnRecuperarDatos = document.getElementById("btn-recuperar-datos");
+    const inputRecuperarDatos = document.getElementById("input-recuperar-datos");
     const btnRecargar = document.getElementById("btn-recargar");
     const estadoAdmin = document.getElementById("estado-admin");
     const fichaEl = document.getElementById("ficha-cliente");
@@ -92,7 +299,6 @@
 
     let clienteActual = null;
     let citasCache = [];
-    let html5QrCode = null;
 
     function pintarFicha(cli) {
       clienteActual = cli;
@@ -169,67 +375,57 @@
       await renderLista();
     }
 
+    function pintarCitasEnLista(lista) {
+      if (!lista.length) {
+        listaAgendados.innerHTML = "<p>No hay fichas agendadas en la base de datos.</p>";
+        return;
+      }
+      listaAgendados.innerHTML = lista
+        .map(
+          (c, idx) => `
+          <div class="item-cita">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div>
+                <strong>${c.nombre} ${c.apellido || ""}</strong> — <span style="color:#ffdf70;">${c.fechaMX || c.fecha} a las ${c.hora}</span>
+                <span style="margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(245,197,24,0.4);font-size:0.8rem;">${c.estado || "Pendiente"}</span>
+              </div>
+              <button type="button" title="Borrar ficha" onclick="window.__borrarCita(${idx})">🗑️</button>
+            </div>
+            <small>Código: <strong>${c.codigo}</strong> | Tel: ${c.telefono} | $99 MXN | ${c.conEspera ? "Con espera" : "Turno normal"}</small>
+            <div class="acciones-grupo">
+              <button type="button" onclick="window.__verCliente('${c.codigo}')">Abrir ficha</button>
+              <button type="button" onclick="window.__toggleEstado(${idx})">Cambiar a ${(c.estado || "Pendiente") === "Pendiente" ? "Atendida" : "Pendiente"}</button>
+            </div>
+          </div>`
+        )
+        .join("");
+    }
+
     async function renderLista() {
       try {
         citasCache = await obtenerTodasLasCitas();
         citasCache.sort((a, b) => (b.id || "").localeCompare(a.id || ""));
         if (!citasCache.length) {
-          listaAgendados.innerHTML = "<p>No hay fichas agendadas en la base de datos.</p>";
+          pintarCitasEnLista([]);
           estadoAdmin.textContent = "Conectado a Firestore (0 citas registradas).";
           return;
         }
         estadoAdmin.textContent = `Conectado a Firestore (${citasCache.length} citas).`;
-        listaAgendados.innerHTML = citasCache
-          .map(
-            (c, idx) => `
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                <div>
-                  <strong>${c.nombre} ${c.apellido || ""}</strong> — <span style="color:#ffdf70;">${c.fechaMX || c.fecha} a las ${c.hora}</span>
-                  <span style="margin-left:8px;padding:2px 8px;border-radius:999px;border:1px solid rgba(212,175,55,0.4);font-size:0.8rem;">${c.estado || "Pendiente"}</span>
-                </div>
-                <button type="button" title="Borrar ficha" onclick="window.__borrarCita(${idx})">🗑️</button>
-              </div>
-              <small>Código: <strong>${c.codigo}</strong> | Tel: ${c.telefono} | $99 MXN | ${c.conEspera ? "Con espera" : "Turno normal"}</small><br/>
-              <button type="button" onclick="window.__verCliente('${c.codigo}')">Abrir ficha</button>
-              <button type="button" onclick="window.__toggleEstado(${idx})">Cambiar a ${(c.estado || "Pendiente") === "Pendiente" ? "Atendida" : "Pendiente"}</button>
-            </div>`
-          )
-          .join("");
+        pintarCitasEnLista(citasCache);
       } catch (err) {
         listaAgendados.innerHTML = `<p>Error al cargar citas: ${err.message || err}</p>`;
         estadoAdmin.textContent = "Revisa las reglas de Firestore o la consola (F12).";
       }
     }
 
-    async function iniciarCamara() {
-      if (!window.Html5Qrcode) return;
-      try {
-        if (!html5QrCode) html5QrCode = new window.Html5Qrcode("lector-qr");
-        estadoAdmin.textContent = "Abriendo cámara...";
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            const cod = extraerCodigo(decodedText);
-            inputBuscar.value = cod;
-            buscar(cod);
-            detenerCamara();
-          },
-          () => {}
-        );
-      } catch (_) {
-        estadoAdmin.textContent = "No se pudo acceder a la cámara.";
+    async function recuperarDatos() {
+      const cod = extraerCodigo(inputBuscar.value);
+      if (cod) {
+        await buscar(cod);
+        return;
       }
-    }
-
-    async function detenerCamara() {
-      if (html5QrCode && html5QrCode.isScanning) {
-        try {
-          await html5QrCode.stop();
-          estadoAdmin.textContent = "Cámara detenida.";
-        } catch (_) {}
-      }
+      estadoAdmin.textContent = "Recuperando datos desde Firestore...";
+      await renderLista();
     }
 
     window.__verCliente = (codigo) => {
@@ -240,9 +436,30 @@
     window.__borrarCita = (idx) => borrarCita(idx);
 
     btnBuscar.addEventListener("click", () => buscar());
+    inputBuscar.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") buscar();
+    });
+
+    if (btnRecuperarDatos) btnRecuperarDatos.addEventListener("click", recuperarDatos);
+    if (inputRecuperarDatos) {
+      inputRecuperarDatos.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          const data = JSON.parse(await file.text());
+          const citas = Array.isArray(data) ? data : (Array.isArray(data.citas) ? data.citas : []);
+          if (citas.length) {
+            citasCache = citas;
+            pintarCitasEnLista(citasCache);
+            estadoAdmin.textContent = `Datos recuperados (${citas.length} ficha(s)).`;
+          }
+        } catch (err) {
+          estadoAdmin.textContent = `Error al recuperar archivo: ${err.message || err}`;
+        }
+        e.target.value = "";
+      });
+    }
     if (btnRecargar) btnRecargar.addEventListener("click", renderLista);
-    if (btnEscanear) btnEscanear.addEventListener("click", iniciarCamara);
-    if (btnDetener) btnDetener.addEventListener("click", detenerCamara);
 
     if (btnAbrirPerfil) {
       btnAbrirPerfil.addEventListener("click", () => {
